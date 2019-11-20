@@ -19,7 +19,7 @@ function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
-                          rtol::Real=sqrt(eps(T))) where {T<:AbstractFloat,N}
+                          rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     h0 = q.h0
     x0, w0 = q.origin
     I0 = f(x0)*w0
