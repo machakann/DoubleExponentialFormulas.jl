@@ -13,13 +13,38 @@ using Test
         expect = BigFloat("4.7942822668880166735857796183531e-1")
 
         atol = 1e-6
-        @test isapprox(quadts(f, Float32, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, Float32, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
 
         atol = 1e-15
-        @test isapprox(quadts(f, Float64, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, Float64, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
 
         atol = 1e-17
-        @test isapprox(quadts(f, BigFloat, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, BigFloat, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+
+        atol = 1e-6
+        qts = QuadTS(Float32)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+        atol = 1e-15
+        qts = QuadTS(Float64)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+        atol = 1e-17
+        qts = QuadTS(BigFloat)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
     end
 
 
@@ -30,13 +55,38 @@ using Test
         expect = BigFloat("1.5822329637296729331174689490262e0")
 
         atol = 1e-6
-        @test isapprox(quadts(f, Float32, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, Float32, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
 
         atol = 1e-15
-        @test isapprox(quadts(f, Float64, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, Float64, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
 
         atol = 1e-17
-        @test isapprox(quadts(f, BigFloat, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, BigFloat, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+
+        atol = 1e-6
+        qts = QuadTS(Float32)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+        atol = 1e-15
+        qts = QuadTS(Float64)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+        atol = 1e-17
+        qts = QuadTS(BigFloat)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
     end
 
 
@@ -47,12 +97,37 @@ using Test
         expect = BigFloat("1.5643964440690497730914930158085e0")
 
         atol = 1e-6
-        @test isapprox(quadts(f, Float32, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, Float32, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
 
         atol = 1e-15
-        @test isapprox(quadts(f, Float64, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, Float64, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
 
         atol = 1e-17
-        @test isapprox(quadts(f, BigFloat, rtol=0.0, atol=atol), expect, atol=atol)
+        I, E = quadts(f, BigFloat, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+
+        atol = 1e-6
+        qts = QuadTS(Float32)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+        atol = 1e-15
+        qts = QuadTS(Float64)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
+
+        atol = 1e-17
+        qts = QuadTS(BigFloat)
+        I, E = qts(f, rtol=0.0, atol=atol)
+        @test isapprox(I, expect, atol=atol)
+        @test E ≤ atol
     end
 end
