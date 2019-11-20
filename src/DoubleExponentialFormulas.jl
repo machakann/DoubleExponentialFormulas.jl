@@ -48,65 +48,12 @@ function (qts::QuadTS{T,N})(f::Function; rtol::Real=sqrt(eps(T)),
     Ih, E
 end
 
-function quadts(f::Function, T::Type{<:AbstractFloat}=Float64;
-                rtol::Real=sqrt(eps(float(T))), atol::Real=0, maxlevel::Integer=10)
-    ϕ(t) = tanh(sinh(t)*π/2)
-    ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    deformula(f, ϕ, ϕ′, T, rtol, atol, maxlevel)
-end
+function quadts end
 
 function quades end
 
 function quadss end
 
-
-# Compute double exponential formula iteratively until satisfying the given tolerance
-function deformula(f::Function, ϕ::Function, ϕ′::Function, T::Type{<:AbstractFloat},
-                   rtol::Real, atol::Real, maxlevel::Integer)
-    I0 = f(ϕ(zero(T)))*ϕ′(zero(T))
-    h0 = one(T)/h0inv
-    nmax = 10^6
-    I, n0, Ih = trapez(f, ϕ, ϕ′, I0, h0, 1, 1, nmax, rtol, atol)
-    E = zero(eltype(Ih))
-    eval = 0
-    p = 1
-    while p ≤ maxlevel
-        prevIh = Ih
-        h = h0/2^p
-        n = n0*2^p
-        I, _, Ih, tol = trapez(f, ϕ, ϕ′, I, h, 1, 2, n, rtol, atol)
-        E = norm(prevIh - Ih)
-        !(E > tol) && break
-        p += 1
-    end
-    Ih, E
-end
-
-
-# Compute the trapezoidal integration with translated integrals and weights
-# Note: ϕ(-t) == -ϕ(t), w(-t) == w(t)
-function trapez(f::Function, ϕ::Function, ϕ′::Function, I, h::Real,
-                kstart::Int, kinc::Int, kend::Int, rtol::Real, atol::Real)
-    T = float(eltype(I))
-    tol = zero(T)
-    Ih = zero(I)
-    lastk = 0
-    for k in kstart:kinc:kend
-        lastk = k
-        x = ϕ(k*h)
-        1 - x ≤ eps(T) && break
-        w = ϕ′(k*h)
-        w ≤ floatmin(T) && break
-        dI1 = f(x)*w
-        dI2 = f(-x)*w
-        I += dI1
-        I += dI2
-        Ih = I*h
-        tol = max(norm(Ih)*rtol, atol)
-        !(norm(dI1*h) + norm(dI2*h) > tol) && break
-    end
-    I, lastk, Ih, tol
-end
 
 function trapez(f::Function, table::Vector{Tuple{T,T}}, I, h::T,
                 rtol::Real, atol::Real) where {T<:AbstractFloat}

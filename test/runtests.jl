@@ -13,22 +13,6 @@ using Test
         expect = BigFloat("4.7942822668880166735857796183531e-1")
 
         atol = 1e-6
-        I, E = quadts(f, Float32, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-15
-        I, E = quadts(f, Float64, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-17
-        I, E = quadts(f, BigFloat, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-
-        atol = 1e-6
         qts = QuadTS(Float32)
         I, E = qts(f, rtol=0.0, atol=atol)
         @test isapprox(I, expect, atol=atol)
@@ -55,22 +39,6 @@ using Test
         expect = BigFloat("1.5822329637296729331174689490262e0")
 
         atol = 1e-6
-        I, E = quadts(f, Float32, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-15
-        I, E = quadts(f, Float64, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-17
-        I, E = quadts(f, BigFloat, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-
-        atol = 1e-6
         qts = QuadTS(Float32)
         I, E = qts(f, rtol=0.0, atol=atol)
         @test isapprox(I, expect, atol=atol)
@@ -95,22 +63,6 @@ using Test
         f(x::T) where {T<:AbstractFloat} = 1/(x^2 + T(1.005))
         f(x::BigFloat) = 1/(x^2 + BigFloat("1.005"))
         expect = BigFloat("1.5643964440690497730914930158085e0")
-
-        atol = 1e-6
-        I, E = quadts(f, Float32, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-15
-        I, E = quadts(f, Float64, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-17
-        I, E = quadts(f, BigFloat, rtol=0.0, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
 
         atol = 1e-6
         qts = QuadTS(Float32)
