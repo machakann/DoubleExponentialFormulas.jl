@@ -50,4 +50,30 @@ end
         examine(QuadTS(Float64), f, expect=expect, atol=1e-14)
         examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
+
+    # Test [0, ∞) interval (with Exp-Sinh quadrature)
+    let
+        f(x::AbstractFloat) = exp(-x)
+        expect = 1
+
+        examine(QuadES(Float32), f, expect=expect, atol=1e-6)
+        examine(QuadES(Float64), f, expect=expect, atol=1e-14)
+        examine(QuadES(BigFloat), f, expect=expect, atol=1e-17)
+
+
+        f(x::AbstractFloat) = -exp(-x)*log(x)
+        expect = BigFloat("5.77215664901532860606512090082e-1")  # γ constant
+
+        examine(QuadES(Float32), f, expect=expect, atol=1e-6)
+        examine(QuadES(Float64), f, expect=expect, atol=1e-14)
+        examine(QuadES(BigFloat), f, expect=expect, atol=1e-17)
+
+
+        f(x::AbstractFloat) = 2/(1 + x^2)
+        expect = π
+
+        examine(QuadES(Float32), f, expect=expect, atol=1e-6)
+        examine(QuadES(Float64), f, expect=expect, atol=1e-14)
+        examine(QuadES(BigFloat), f, expect=expect, atol=1e-17)
+    end
 end
