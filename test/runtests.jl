@@ -71,4 +71,28 @@ end
         examine(QuadES(Float64),  f, expect=expect, atol=1e-14)
         examine(QuadES(BigFloat), f, expect=expect, atol=1e-17)
     end
+
+
+    # Test (-∞, ∞) interval (with Sinh-Sinh quadrature)
+    let
+        f(x::AbstractFloat) = exp(-x^2)
+        expect = sqrt(BigFloat(π))
+        examine(QuadSS(Float32),  f, expect=expect, atol=1e-6)
+        examine(QuadSS(Float64),  f, expect=expect, atol=1e-14)
+        examine(QuadSS(BigFloat), f, expect=expect, atol=1e-17)
+
+
+        f(x::AbstractFloat) = x^2*exp(-3*x^2)
+        expect = sqrt(BigFloat(π)/3)/(2*3)
+        examine(QuadSS(Float32),  f, expect=expect, atol=1e-6)
+        examine(QuadSS(Float64),  f, expect=expect, atol=1e-14)
+        examine(QuadSS(BigFloat), f, expect=expect, atol=1e-17)
+
+
+        f(x::AbstractFloat) = 1/(1 + x^2)
+        expect = π
+        examine(QuadSS(Float32),  f, expect=expect, atol=1e-6)
+        examine(QuadSS(Float64),  f, expect=expect, atol=1e-14)
+        examine(QuadSS(BigFloat), f, expect=expect, atol=1e-17)
+    end
 end

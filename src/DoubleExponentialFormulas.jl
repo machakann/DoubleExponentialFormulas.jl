@@ -8,7 +8,8 @@ export
     quades,
     quadss,
     QuadTS,
-    QuadES
+    QuadES,
+    QuadSS
 
 const h0inv = 8
 
@@ -23,6 +24,7 @@ function quadts end
 include("quades.jl")
 function quades end
 
+include("quadss.jl")
 function quadss end
 
 
