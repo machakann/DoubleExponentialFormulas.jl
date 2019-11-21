@@ -14,19 +14,19 @@ using Test
 
         atol = 1e-6
         qts = QuadTS(Float32)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
 
         atol = 1e-15
         qts = QuadTS(Float64)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
 
         atol = 1e-17
         qts = QuadTS(BigFloat)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
     end
@@ -40,19 +40,19 @@ using Test
 
         atol = 1e-6
         qts = QuadTS(Float32)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
 
         atol = 1e-15
         qts = QuadTS(Float64)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
 
         atol = 1e-17
         qts = QuadTS(BigFloat)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
     end
@@ -66,19 +66,19 @@ using Test
 
         atol = 1e-6
         qts = QuadTS(Float32)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
 
         atol = 1e-15
         qts = QuadTS(Float64)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
 
         atol = 1e-17
         qts = QuadTS(BigFloat)
-        I, E = qts(f, rtol=0.0, atol=atol)
+        I, E = qts(f, atol=atol)
         @test isapprox(I, expect, atol=atol)
         @test E ≤ atol
     end
