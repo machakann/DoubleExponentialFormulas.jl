@@ -1,6 +1,16 @@
 using DoubleExponentialFormulas
 using Test
 
+function examine(q, f; expect, atol)
+    # Error tolerance
+    N = 5
+
+    # Test
+    I, E = q(f, atol=atol)
+    @test isapprox(I, expect, atol=N*atol)
+    @test E ≤ atol
+end
+
 @testset "DoubleExponentialFormulas.jl" begin
     # Test integrals are cited from:
     # Kahaner, D.K.: Comparison of numerical quadrature formulas, Mathematical
@@ -12,23 +22,9 @@ using Test
         f(x::BigFloat) = BigFloat("0.92")*cosh(x) - cos(x)
         expect = BigFloat("4.7942822668880166735857796183531e-1")
 
-        atol = 1e-6
-        qts = QuadTS(Float32)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-15
-        qts = QuadTS(Float64)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-17
-        qts = QuadTS(BigFloat)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
+        examine(QuadTS(Float32), f, expect=expect, atol=1e-6)
+        examine(QuadTS(Float64), f, expect=expect, atol=1e-15)
+        examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
 
 
@@ -38,23 +34,9 @@ using Test
         f(x::BigFloat) = 1/(x^4 + x^2 + BigFloat("0.9"))
         expect = BigFloat("1.5822329637296729331174689490262e0")
 
-        atol = 1e-6
-        qts = QuadTS(Float32)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-15
-        qts = QuadTS(Float64)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-17
-        qts = QuadTS(BigFloat)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
+        examine(QuadTS(Float32), f, expect=expect, atol=1e-6)
+        examine(QuadTS(Float64), f, expect=expect, atol=1e-15)
+        examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
 
 
@@ -64,22 +46,8 @@ using Test
         f(x::BigFloat) = 1/(x^2 + BigFloat("1.005"))
         expect = BigFloat("1.5643964440690497730914930158085e0")
 
-        atol = 1e-6
-        qts = QuadTS(Float32)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-15
-        qts = QuadTS(Float64)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
-
-        atol = 1e-17
-        qts = QuadTS(BigFloat)
-        I, E = qts(f, atol=atol)
-        @test isapprox(I, expect, atol=atol)
-        @test E ≤ atol
+        examine(QuadTS(Float32), f, expect=expect, atol=1e-6)
+        examine(QuadTS(Float64), f, expect=expect, atol=1e-15)
+        examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
 end
