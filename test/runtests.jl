@@ -3,7 +3,7 @@ using Test
 
 function examine(q, f; expect, atol)
     # Error tolerance
-    N = 5
+    N = 10
 
     # Test
     I, E = q(f, atol=atol)
@@ -23,7 +23,7 @@ end
         expect = BigFloat("4.7942822668880166735857796183531e-1")
 
         examine(QuadTS(Float32), f, expect=expect, atol=1e-6)
-        examine(QuadTS(Float64), f, expect=expect, atol=1e-15)
+        examine(QuadTS(Float64), f, expect=expect, atol=1e-14)
         examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
 
@@ -35,7 +35,7 @@ end
         expect = BigFloat("1.5822329637296729331174689490262e0")
 
         examine(QuadTS(Float32), f, expect=expect, atol=1e-6)
-        examine(QuadTS(Float64), f, expect=expect, atol=1e-15)
+        examine(QuadTS(Float64), f, expect=expect, atol=1e-14)
         examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
 
@@ -47,7 +47,7 @@ end
         expect = BigFloat("1.5643964440690497730914930158085e0")
 
         examine(QuadTS(Float32), f, expect=expect, atol=1e-6)
-        examine(QuadTS(Float64), f, expect=expect, atol=1e-15)
+        examine(QuadTS(Float64), f, expect=expect, atol=1e-14)
         examine(QuadTS(BigFloat), f, expect=expect, atol=1e-17)
     end
 end
