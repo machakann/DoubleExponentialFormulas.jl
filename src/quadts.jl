@@ -34,6 +34,17 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     end
     Ih, E
 end
+function (q::QuadTS{T,N})(f::Function, a::Real, b::Real;
+                          atol=zero(T), kwargs...) where {T<:AbstractFloat,N}
+    if a == -1 && b == 1
+        q(f; kwargs...)
+    else
+        _atol = atol/(b - a)*2
+        f′(x) = f((b + a)/2 + (b - a)*x/2)
+        I, E = q(f′; atol=_atol, kwargs...)
+        I*(b - a)/2, E*(b - a)/2
+    end
+end
 
 
 function trapez(f::Function, qtsw::QuadTSWeights{T}, I, h::T,
