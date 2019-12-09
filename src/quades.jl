@@ -24,38 +24,30 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
     h0 = q.h0
     x0, w0 = q.origin
     I0 = f(x0)*w0
-    I, Ih = trapez(f, q.table[1], I0, h0, rtol, atol)
+    I = trapez(f, q.table[1], I0)
+    Ih = I*h0
     E = zero(eltype(Ih))
     for level in 1:(N-1)
         prevIh = Ih
         h = h0/2^level
-        I, Ih, tol = trapez(f, q.table[level+1], I, h, rtol, atol)
+        I = trapez(f, q.table[level+1], I)
+        Ih = I*h
         E = norm(prevIh - Ih)
-        !(E > tol) && break
+        !(E > max(norm(Ih)*rtol, atol)) && break
     end
     Ih, E
 end
 
 
-function trapez(f::Function, qesw::QuadESWeights{T}, I, h::T,
-                rtol::Real, atol::Real) where {T<:AbstractFloat}
-    tol = zero(float(eltype(I)))
-    Ih = zero(I)
+function trapez(f::Function, qesw::QuadESWeights{T}, I) where {T<:AbstractFloat}
+    dI = zero(I)
     for (x, w) in qesw.weights_n
-        dI = f(x)*w
-        I += dI
-        Ih = I*h
-        tol = max(norm(Ih)*rtol, atol)
-        !(norm(dI*h) > tol) && break
+        dI += f(x)*w
     end
     for (x, w) in qesw.weights_p
-        dI = f(x)*w
-        I += dI
-        Ih = I*h
-        tol = max(norm(Ih)*rtol, atol)
-        !(norm(dI*h) > tol) && break
+        dI += f(x)*w
     end
-    I, Ih, tol
+    I + dI
 end
 
 
@@ -92,6 +84,8 @@ function generate_table(::Type{QuadESWeights}, maxlevel::Integer, h0::T) where {
             k += step
         end
 
+        reverse!(weights_n)
+        reverse!(weights_p)
         table[level+1] = QuadESWeights{T}(weights_n, weights_p)
     end
 

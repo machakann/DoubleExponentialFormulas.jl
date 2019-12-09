@@ -37,8 +37,8 @@ using Test
 
         rtol = 1e-6
         I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test_broken E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
@@ -192,18 +192,18 @@ using Test
 
         rtol = 1e-5
         I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
     end
 
 
