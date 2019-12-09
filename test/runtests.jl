@@ -305,19 +305,19 @@ using Test
         expect = BigFloat("5.0000021117e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 10, rtol=rtol)
-        @test_broken isapprox(I, expect, atol=0.01)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(Float32)(f, 0, 0.5, 10, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*2)
+        @test E ≤ rtol*norm(I)*2
 
-        rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 10, rtol=rtol)
-        @test_broken isapprox(I, expect, atol=0.01)
-        @test_skip E ≤ rtol*norm(I)
+        rtol = 1e-10
+        I, E = QuadTS(Float64)(f, 0, 0.5, 10, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*2)
+        @test E ≤ rtol*norm(I)*2
 
-        rtol = 1e-17
-        I, E = QuadTS(BigFloat)(f, 0, 10, rtol=rtol)
-        @test_broken isapprox(I, expect, atol=0.01)
-        @test_skip E ≤ rtol*norm(I)
+        rtol = 1e-10
+        I, E = QuadTS(BigFloat)(f, 0, 0.5, 10, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*2)
+        @test E ≤ rtol*norm(I)*2
     end
 
 
@@ -329,19 +329,19 @@ using Test
         expect = 1
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 10, rtol=rtol)
-        @test_broken isapprox(I, expect, atol=0.01)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(Float32)(f, 0, 1, 10, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*2)
+        @test E ≤ rtol*norm(I)*2
 
         rtol = 1e-11
-        I, E = QuadTS(Float64)(f, 0, 10, rtol=rtol)
-        @test_broken isapprox(I, expect, atol=0.01)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(Float64)(f, 0, 1, 10, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*2)
+        @test E ≤ rtol*norm(I)*2
 
         rtol = 1e-11
-        I, E = QuadTS(BigFloat)(f, 0, 10, rtol=rtol)
-        @test_broken isapprox(I, expect, atol=0.01)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(BigFloat)(f, 0, 1, 10, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*2)
+        @test E ≤ rtol*norm(I)*2
     end
 
 
@@ -469,19 +469,19 @@ using Test
         expect = BigFloat("0.2108027355005492773756")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(Float32)(f, 0, 0.3, 0.5, 1, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*3)
+        @test E ≤ rtol*norm(I)*3
 
         rtol = 1e-13
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(Float64)(f, 0, 0.3, 0.5, 1, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*3)
+        @test E ≤ rtol*norm(I)*3
 
         rtol = 1e-17
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
-        @test_broken isapprox(I, expect, rtol=10rtol)
-        @test_skip E ≤ rtol*norm(I)
+        I, E = QuadTS(BigFloat)(f, 0, 0.3, 0.5, 1, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol*3)
+        @test E ≤ rtol*norm(I)*3
     end
 
 

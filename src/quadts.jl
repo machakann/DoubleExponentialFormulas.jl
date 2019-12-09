@@ -45,22 +45,29 @@ function (q::QuadTS{T,N})(f::Function, a::Real, b::Real;
         I*(b - a)/2, E*(b - a)/2
     end
 end
-
-
-function trapez(f::Function, qtsw::QuadTSWeights{T}, I, h::T,
-                rtol::Real, atol::Real) where {T<:AbstractFloat}
-    tol = zero(float(eltype(I)))
-    Ih = zero(I)
-    for (x, w) in qtsw.weights
-        dI1 = f(x)*w
-        dI2 = f(-x)*w
-        I += dI1
-        I += dI2
-        Ih = I*h
-        tol = max(norm(Ih)*rtol, atol)
-        !(norm(dI1*h) + norm(dI2*h) > tol) && break
+function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;
+                          kwargs...) where {T<:AbstractFloat,N}
+    I, E = q(f, a, b; kwargs...)
+    bc = (b, c...)
+    i = 2
+    n = length(bc)
+    while i <= n
+        dI, dE = q(f, bc[i-1], bc[i]; kwargs...)
+        I += dI
+        E += dE
+        i += 1
     end
-    I, Ih, tol
+    I, E
+end
+
+
+function trapez(f::Function, qtsw::QuadTSWeights{T}, I) where {T<:AbstractFloat}
+    dI = zero(I)
+    for (x, w) in qtsw.weights
+        dI += f(x)*w
+        dI += f(-x)*w
+    end
+    I + dI
 end
 
 
