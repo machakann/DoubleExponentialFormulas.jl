@@ -644,4 +644,86 @@ using Test
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
+
+
+    # Test non-scalar output with QuadTS
+    let
+        f(x::AbstractFloat) = [1/(1 + x^2), 2/(1 + x^2)]
+        expect = [BigFloat(π)/2, BigFloat(π)]
+
+        rtol = 1e-6
+        I, E = QuadTS(Float32)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-14
+        I, E = QuadTS(Float64)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-30
+        I, E = QuadTS(BigFloat)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+
+        rtol = 1e-6
+        I, E = QuadTS(Float32)(f, -1, 0, 1, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-14
+        I, E = QuadTS(Float64)(f, -1, 0, 1, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-30
+        I, E = QuadTS(BigFloat)(f, -1, 0, 1, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+    end
+
+
+    # Test non-scalar output with QuadES
+    let
+        f(x::AbstractFloat) = [exp(-x), 2exp(-x)]
+        expect = [1, 2]
+
+        rtol = 1e-6
+        I, E = QuadES(Float32)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-14
+        I, E = QuadES(Float64)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-30
+        I, E = QuadES(BigFloat)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+    end
+
+
+    # Test non-scalar output with QuadSS
+    let
+        f(x::AbstractFloat) = [exp(-x^2), 2*exp(-x^2)]
+        expect = [sqrt(BigFloat(π)), 2*sqrt(BigFloat(π))]
+
+        rtol = 1e-6
+        I, E = QuadSS(Float32)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-14
+        I, E = QuadSS(Float64)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+
+        rtol = 1e-30
+        I, E = QuadSS(BigFloat)(f, rtol=rtol)
+        @test isapprox(I, expect, rtol=10rtol)
+        @test E ≤ rtol*norm(I)
+    end
 end

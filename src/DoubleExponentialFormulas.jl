@@ -41,12 +41,14 @@ function startindex(f::Function, weights, istart::Integer)
     iend = length(weights)
     for i in istart:iend
         x, _ = @inbounds weights[i]
-        if !isnan(f(x))
+        if all(isnotnan.(f(x)))
             return i
         end
     end
     return length(weights)
 end
+
+isnotnan(x) = !isnan(x)
 
 
 end # module
