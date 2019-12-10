@@ -1,23 +1,23 @@
 using LinearAlgebra: norm
 
 
-struct QuadTSWeights{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
-    weights::Vector{Tuple{T,T}}
+struct QuadTSWeightTable{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
+    table::Vector{Tuple{T,T}}
 end
-Base.size(qtsw::QuadTSWeights) = size(qtsw.weights)
-Base.getindex(qtsw::QuadTSWeights, i::Int) = getindex(qtsw.weights, i)
+Base.size(wt::QuadTSWeightTable) = size(wt.table)
+Base.getindex(wt::QuadTSWeightTable, i::Int) = getindex(wt.table, i)
 
 
 struct QuadTS{T<:AbstractFloat,N}
     h0::T
     origin::Tuple{T,T}
-    table::NTuple{N,QuadTSWeights{T}}
+    tables::NTuple{N,QuadTSWeightTable{T}}
 end
 function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/h0inv)
     @assert maxlevel > 0
     t0 = zero(T)
-    table, origin = generate_table(QuadTSWeights, maxlevel, T(h0))
-    QuadTS{T,maxlevel+1}(T(h0), origin, table)
+    tables, origin = generate_tables(QuadTSWeightTable, maxlevel, T(h0))
+    QuadTS{T,maxlevel+1}(T(h0), origin, tables)
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
@@ -25,13 +25,13 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     h0 = q.h0
     x0, w0 = q.origin
     I = f(x0)*w0
-    I += trapez(f, q.table[1], I)
+    I += trapez(f, q.tables[1], I)
     Ih = I*h0
     E = zero(eltype(Ih))
     for level in 1:(N-1)
         prevIh = Ih
         h = h0/2^level
-        I += trapez(f, q.table[level+1], I)
+        I += trapez(f, q.tables[level+1], I)
         Ih = I*h
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
@@ -65,9 +65,9 @@ function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;
 end
 
 
-function trapez(f::Function, qtsw::QuadTSWeights{T}, I) where {T<:AbstractFloat}
+function trapez(f::Function, wt::QuadTSWeightTable{T}, I) where {T<:AbstractFloat}
     dI = zero(I)
-    for (x, w) in qtsw
+    for (x, w) in wt
         dI += f(x)*w
         dI += f(-x)*w
     end
@@ -75,12 +75,12 @@ function trapez(f::Function, qtsw::QuadTSWeights{T}, I) where {T<:AbstractFloat}
 end
 
 
-function generate_table(::Type{QuadTSWeights}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
+function generate_tables(::Type{QuadTSWeightTable}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
     ϕ(t) = tanh(sinh(t)*π/2)
     ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    table = Vector{QuadTSWeights}(undef, maxlevel+1)
+    tables = Vector{QuadTSWeightTable}(undef, maxlevel+1)
     for level in 0:maxlevel
-        weights = Tuple{T,T}[]
+        table = Tuple{T,T}[]
         h = h0/2^level
         k = 1
         step = level == 0 ? 1 : 2
@@ -90,15 +90,15 @@ function generate_table(::Type{QuadTSWeights}, maxlevel::Integer, h0::T) where {
             1 - xk ≤ eps(T) && break
             wk = ϕ′(t)
             wk ≤ floatmin(T) && break
-            push!(weights, (xk, wk))
+            push!(table, (xk, wk))
             k += step
         end
-        reverse!(weights)
-        table[level+1] = QuadTSWeights{T}(weights)
+        reverse!(table)
+        tables[level+1] = QuadTSWeightTable{T}(table)
     end
 
     x0 = ϕ(zero(T))
     w0 = ϕ′(zero(T))
     origin = (x0, w0)
-    Tuple(table), origin
+    Tuple(tables), origin
 end
