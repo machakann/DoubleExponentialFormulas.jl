@@ -1,9 +1,11 @@
 using LinearAlgebra: norm
 
 
-struct QuadSSWeights{T<:AbstractFloat}
+struct QuadSSWeights{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
     weights::Vector{Tuple{T,T}}
 end
+Base.size(qssw::QuadSSWeights) = size(qssw.weights)
+Base.getindex(qssw::QuadSSWeights, i::Int) = getindex(qssw.weights, i)
 
 
 struct QuadSS{T<:AbstractFloat,N}
@@ -20,31 +22,45 @@ end
 
 function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
+    f_p = f
+    f_n = x -> f(-x)
     h0 = q.h0
     x0, w0 = q.origin
-    I0 = f(x0)*w0
-    I = trapez(f, q.table[1], I0)
+    I = f(x0)*w0
+    istart_p = startindex(f_p, q.table[1], 1)
+    istart_n = startindex(f_n, q.table[1], 1)
+    I += trapez(f, q.table[1], I, istart_p)
+    I += trapez(f, q.table[1], I, istart_n)
     Ih = I*h0
     E = zero(eltype(Ih))
+    istart_p = max(1, istart_p - 1)
+    istart_n = max(1, istart_n - 1)
     for level in 1:(N-1)
         prevIh = Ih
         h = h0/2^level
-        I = trapez(f, q.table[level+1], I)
+        istart_p = startindex(f_p, q.table[level+1], istart_p)
+        istart_n = startindex(f_n, q.table[level+1], istart_n)
+        I += trapez(f, q.table[level+1], I, istart_p)
+        I += trapez(f, q.table[level+1], I, istart_n)
         Ih = I*h
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
+        istart_p *= 2
+        istart_n *= 2
     end
     Ih, E
 end
 
 
-function trapez(f::Function, qssw::QuadSSWeights{T}, I) where {T<:AbstractFloat}
+function trapez(f::Function, qssw::QuadSSWeights{T}, I,
+                istart::Integer) where {T<:AbstractFloat}
     dI = zero(I)
-    for (x, w) in qssw.weights
+    iend = length(qssw)
+    for i in istart:iend
+        x, w = qssw[i]
         dI += f(x)*w
-        dI += f(-x)*w
     end
-    I + dI
+    dI
 end
 
 

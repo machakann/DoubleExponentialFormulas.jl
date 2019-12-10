@@ -1,9 +1,11 @@
 using LinearAlgebra: norm
 
 
-struct QuadTSWeights{T<:AbstractFloat}
+struct QuadTSWeights{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
     weights::Vector{Tuple{T,T}}
 end
+Base.size(qtsw::QuadTSWeights) = size(qtsw.weights)
+Base.getindex(qtsw::QuadTSWeights, i::Int) = getindex(qtsw.weights, i)
 
 
 struct QuadTS{T<:AbstractFloat,N}
@@ -22,14 +24,14 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     h0 = q.h0
     x0, w0 = q.origin
-    I0 = f(x0)*w0
-    I = trapez(f, q.table[1], I0)
+    I = f(x0)*w0
+    I += trapez(f, q.table[1], I)
     Ih = I*h0
     E = zero(eltype(Ih))
     for level in 1:(N-1)
         prevIh = Ih
         h = h0/2^level
-        I = trapez(f, q.table[level+1], I)
+        I += trapez(f, q.table[level+1], I)
         Ih = I*h
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
@@ -65,11 +67,11 @@ end
 
 function trapez(f::Function, qtsw::QuadTSWeights{T}, I) where {T<:AbstractFloat}
     dI = zero(I)
-    for (x, w) in qtsw.weights
+    for (x, w) in qtsw
         dI += f(x)*w
         dI += f(-x)*w
     end
-    I + dI
+    dI
 end
 
 

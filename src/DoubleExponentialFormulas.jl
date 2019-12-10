@@ -28,4 +28,25 @@ include("quadss.jl")
 function quadss end
 
 
+"""
+    startindex(f::Function, weights, istart::Integer)
+
+Returns the first index i which `f(weights[i][1])` is not NaN,
+where `i >= istart`.
+
+This function is employed to avoid sampling `f(x)` with too large `abs(x)` in
+trapezoidal rule.
+"""
+function startindex(f::Function, weights, istart::Integer)
+    iend = length(weights)
+    for i in istart:iend
+        x, _ = @inbounds weights[i]
+        if !isnan(f(x))
+            return i
+        end
+    end
+    return length(weights)
+end
+
+
 end # module
