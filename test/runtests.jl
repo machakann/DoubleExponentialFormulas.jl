@@ -7,6 +7,10 @@ using Test
     # Kahaner, D.K.: Comparison of numerical quadrature formulas, Mathematical
     # software, Rice, J.R. (Ed.), Academic Press. pp.229-259 (1971)
 
+    # NOTE that I couldn't get the original book, the below problems are cited
+    # from a second source.
+    # http://id.nii.ac.jp/1001/00011109/
+
     # Test problem 1
     let
         f(x::AbstractFloat) = exp(x)
