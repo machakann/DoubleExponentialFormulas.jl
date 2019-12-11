@@ -1225,32 +1225,38 @@ using Test
 
         rtol = 1e-6
         I, E = quadts32(f, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadts64(f, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quadtsBF(f, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
 
         rtol = 1e-6
         I, E = quadts32(f, -1, 0, 1, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadts64(f, -1, 0, 1, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quadtsBF(f, -1, 0, 1, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -1263,16 +1269,19 @@ using Test
 
         rtol = 1e-6
         I, E = quades32(f, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quades64(f, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quadesBF(f, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -1285,16 +1294,19 @@ using Test
 
         rtol = 1e-6
         I, E = quadss32(f, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadss64(f, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quadssBF(f, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -1307,32 +1319,38 @@ using Test
 
         rtol = 1e-6
         I, E = quadde32(f, -1, 1, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadde64(f, -1, 1, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quaddeBF(f, -1, 1, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
 
         rtol = 1e-6
         I, E = quadde32(f, -1, 0, 1, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadde64(f, -1, 0, 1, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quaddeBF(f, -1, 0, 1, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
@@ -1342,16 +1360,19 @@ using Test
 
         rtol = 1e-6
         I, E = quadde32(f, 0, Inf, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadde64(f, 0, Inf, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quaddeBF(f, 0, Inf, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
@@ -1361,16 +1382,19 @@ using Test
 
         rtol = 1e-6
         I, E = quadde32(f, -Inf, Inf, rtol=rtol)
+        @test eltype(I) == Float32
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
         I, E = quadde64(f, -Inf, Inf, rtol=rtol)
+        @test eltype(I) == Float64
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
         I, E = quaddeBF(f, -Inf, Inf, rtol=rtol)
+        @test eltype(I) == BigFloat
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
