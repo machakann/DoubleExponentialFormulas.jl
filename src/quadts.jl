@@ -43,10 +43,14 @@ function (q::QuadTS{T,N})(f::Function, a::Real, b::Real;
     if a == -1 && b == 1
         q(f; kwargs...)
     else
-        _atol = atol/(b - a)*2
-        f′(u) = f((b + a)/2 + (b - a)*u/2)
-        I, E = q(f′; atol=_atol, kwargs...)
-        I*(b - a)/2, E*(b - a)/2
+        a′ = T(a)
+        b′ = T(b)
+        s = b′ + a′
+        t = b′ - a′
+        atol′ = atol/t*2
+        f′(u) = f((s + t*u)/2)
+        I, E = q(f′; atol=atol′, kwargs...)
+        I*t/2, E*t/2
     end
 end
 function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;
