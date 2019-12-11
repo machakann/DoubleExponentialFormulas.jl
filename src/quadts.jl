@@ -40,17 +40,22 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
 end
 function (q::QuadTS{T,N})(f::Function, a::Real, b::Real;
                           atol=zero(T), kwargs...) where {T<:AbstractFloat,N}
-    if a == -1 && b == 1
-        q(f; kwargs...)
+    if a > b
+        I, E = q(f, b, a; kwargs...)
+        -I, E
     else
-        a′ = T(a)
-        b′ = T(b)
-        s = b′ + a′
-        t = b′ - a′
-        atol′ = atol/t*2
-        f′(u) = f((s + t*u)/2)
-        I, E = q(f′; atol=atol′, kwargs...)
-        I*t/2, E*t/2
+        if a == -1 && b == 1
+            q(f; kwargs...)
+        else
+            a′ = T(a)
+            b′ = T(b)
+            s = b′ + a′
+            t = b′ - a′
+            atol′ = atol/t*2
+            f′(u) = f((s + t*u)/2)
+            I, E = q(f′; atol=atol′, kwargs...)
+            I*t/2, E*t/2
+        end
     end
 end
 function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;

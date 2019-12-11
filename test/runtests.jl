@@ -566,6 +566,46 @@ using Test
     end
 
 
+    # Test anti-symmetric equivalence when switching inteval limits with QuadTS
+    # ∫f(x)dx in [a, b] = -∫f(x)dx in [b, a]
+    let
+        f(x::AbstractFloat) = exp(-x^2)
+
+        # [-1, 1]
+        rtol = 1e-6
+        I1, _ = quadts32(f, -1, 1, rtol=rtol)
+        I2, _ = quadts32(f, 1, -1, rtol=rtol)
+        @test I1 ≈ -I2
+
+        rtol = 1e-14
+        I1, E = quadts64(f, -1, 1, rtol=rtol)
+        I2, E = quadts64(f, 1, -1, rtol=rtol)
+        @test I1 ≈ -I2
+
+        rtol = 1e-30
+        I1, E = quadtsBF(f, -1, 1, rtol=rtol)
+        I2, E = quadtsBF(f, 1, -1, rtol=rtol)
+        @test I1 ≈ -I2
+
+
+        # [a, b] (a and b are finite numbers)
+        rtol = 1e-6
+        I1, _ = quadts32(f, -2, 2, rtol=rtol)
+        I2, _ = quadts32(f, 2, -2, rtol=rtol)
+        @test I1 ≈ -I2
+
+        rtol = 1e-14
+        I1, E = quadts64(f, -2, 2, rtol=rtol)
+        I2, E = quadts64(f, 2, -2, rtol=rtol)
+        @test I1 ≈ -I2
+
+        rtol = 1e-30
+        I1, E = quadtsBF(f, -2, 2, rtol=rtol)
+        I2, E = quadtsBF(f, 2, -2, rtol=rtol)
+        @test I1 ≈ -I2
+    end
+
+
     # Test [0, ∞) interval (with Exp-Sinh quadrature)
     let
         f(x::AbstractFloat) = exp(-x)
