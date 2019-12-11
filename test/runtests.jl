@@ -113,7 +113,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadtsBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -137,7 +137,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadtsBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -183,7 +183,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-12
+        rtol = 1e-30
         I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -369,7 +369,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)*2
 
-        rtol = 1e-11
+        rtol = 1e-30
         I, E = quadtsBF(f, 0, 1, 10, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol*2)
@@ -417,7 +417,7 @@ using Test
         @test E ≤ sqrt(eps(I))*norm(I)
 
         # NOTE: the accuracy is not improved so much?
-        rtol = 1e-15
+        rtol = 1e-16
         I, E = quadtsBF(f, 0.01, 1, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -427,7 +427,7 @@ using Test
 
     # Test problem 18
     # Attenuating oscillation
-    # NOTE: expect value is doubtful...
+    # NOTE: expect value is doubtful?
     let
         f(x::AbstractFloat) = cos(cos(x) + 3*sin(x) + 2*cos(2x) + 3*sin(2x) + 3*cos(3x))
         expect = BigFloat("8.386763233809718250439e-1")
@@ -439,14 +439,14 @@ using Test
 
         I, E = quadts64(f, 0, π)
         @test I isa Float64
-        @test isapprox(I, expect, atol=1e-7)
-        @test E ≤ sqrt(eps(I))*norm(I)
+        @test_broken I ≈ expect
+        @test_skip E ≤ sqrt(eps(I))*norm(I)
 
         rtol = 1e-11
         I, E = quadtsBF(f, 0, π, rtol=rtol)
         @test I isa BigFloat
-        @test isapprox(I, expect, atol=1e-7)
-        @test E ≤ rtol*norm(I)
+        @test_broken isapprox(I, expect, rtol=rtol)
+        @test_skip E ≤ rtol*norm(I)
     end
 
 
@@ -489,7 +489,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadtsBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -514,7 +514,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)*3
 
-        rtol = 1e-17
+        rtol = 1e-21
         I, E = quadtsBF(f, 0, 0.3, 0.5, 1, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol*3)
@@ -571,7 +571,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadesBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -593,7 +593,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadesBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -616,7 +616,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadesBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -665,7 +665,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadssBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -689,7 +689,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadssBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
@@ -712,7 +712,7 @@ using Test
         @test I ≈ expect
         @test E ≤ sqrt(eps(I))*norm(I)
 
-        rtol = 1e-17
+        rtol = 1e-30
         I, E = quadssBF(f, rtol=rtol)
         @test I isa BigFloat
         @test isapprox(I, expect, rtol=10rtol)
