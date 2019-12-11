@@ -11,23 +11,40 @@ using Test
     # from a second source.
     # http://id.nii.ac.jp/1001/00011109/
 
+    quadts32 = QuadTS(Float32)
+    quadts64 = QuadTS(Float64)
+    quadtsBF = QuadTS(BigFloat)
+
+    quades32 = QuadES(Float32)
+    quades64 = QuadES(Float64)
+    quadesBF = QuadES(BigFloat)
+
+    quadss32 = QuadSS(Float32)
+    quadss64 = QuadSS(Float64)
+    quadssBF = QuadSS(BigFloat)
+
+    quadde32 = QuadDE(Float32)
+    quadde64 = QuadDE(Float64)
+    quaddeBF = QuadDE(BigFloat)
+
+
     # Test problem 1
     let
         f(x::AbstractFloat) = exp(x)
         expect = BigFloat("1.71828182845904523536028747135")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -40,17 +57,17 @@ using Test
         expect = BigFloat("7.00000000000000000000000000000e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test_broken E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test_broken isapprox(I, expect, rtol=10rtol)
         @test_skip E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test_broken isapprox(I, expect, rtol=10rtol)
         @test_skip E ≤ rtol*norm(I)
     end
@@ -62,17 +79,17 @@ using Test
         expect = BigFloat("6.66666666666666666666666666666e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -84,17 +101,17 @@ using Test
         expect = BigFloat("4.7942822668880166735857796183531e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, rtol=rtol)
+        I, E = quadts32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, rtol=rtol)
+        I, E = quadts64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadTS(BigFloat)(f, rtol=rtol)
+        I, E = quadtsBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -107,17 +124,17 @@ using Test
         expect = BigFloat("1.5822329637296729331174689490262e0")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, rtol=rtol)
+        I, E = quadts32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, rtol=rtol)
+        I, E = quadts64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadTS(BigFloat)(f, rtol=rtol)
+        I, E = quadtsBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -129,17 +146,17 @@ using Test
         expect = BigFloat("4.00000000000000000000000000000e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -151,17 +168,17 @@ using Test
         expect = 2
 
         rtol = 1e-3
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-8
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-12
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -173,17 +190,17 @@ using Test
         expect = BigFloat("8.66972987339911037573995163882e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -195,17 +212,17 @@ using Test
         expect = BigFloat("1.15470066904371304340692220986e0")
 
         rtol = 1e-5
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -217,17 +234,17 @@ using Test
         expect = BigFloat("6.93147180559945309417232121458e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -239,17 +256,17 @@ using Test
         expect = BigFloat("3.7988549304172247536823662649e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -261,17 +278,17 @@ using Test
         expect = BigFloat("7.77504634112248276417586545425e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -309,17 +326,17 @@ using Test
         expect = BigFloat("5.0000021117e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 0.5, 10, rtol=rtol)
+        I, E = quadts32(f, 0, 0.5, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*2)
         @test E ≤ rtol*norm(I)*2
 
         rtol = 1e-10
-        I, E = QuadTS(Float64)(f, 0, 0.5, 10, rtol=rtol)
+        I, E = quadts64(f, 0, 0.5, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*2)
         @test E ≤ rtol*norm(I)*2
 
         rtol = 1e-10
-        I, E = QuadTS(BigFloat)(f, 0, 0.5, 10, rtol=rtol)
+        I, E = quadtsBF(f, 0, 0.5, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*2)
         @test E ≤ rtol*norm(I)*2
     end
@@ -333,17 +350,17 @@ using Test
         expect = 1
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, 10, rtol=rtol)
+        I, E = quadts32(f, 0, 1, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*2)
         @test E ≤ rtol*norm(I)*2
 
         rtol = 1e-11
-        I, E = QuadTS(Float64)(f, 0, 1, 10, rtol=rtol)
+        I, E = quadts64(f, 0, 1, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*2)
         @test E ≤ rtol*norm(I)*2
 
         rtol = 1e-11
-        I, E = QuadTS(BigFloat)(f, 0, 1, 10, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*2)
         @test E ≤ rtol*norm(I)*2
     end
@@ -356,17 +373,17 @@ using Test
         expect = BigFloat("4.99363802871016550828171090341e-1")
 
         rtol = 1e-5
-        I, E = QuadTS(Float32)(f, 0, 10, rtol=rtol)
+        I, E = quadts32(f, 0, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0, 10, rtol=rtol)
+        I, E = quadts64(f, 0, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 10, rtol=rtol)
+        I, E = quadtsBF(f, 0, 10, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -378,19 +395,19 @@ using Test
         expect = BigFloat("1.12139569626709460839885e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0.01, 1, rtol=rtol)
+        I, E = quadts32(f, 0.01, 1, rtol=rtol)
         # FIXME: necessarily to give atol?
         @test isapprox(I, expect, atol=1e-5)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, 0.01, 1, rtol=rtol)
+        I, E = quadts64(f, 0.01, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         # NOTE: the accuracy is not improved so much?
         rtol = 1e-15
-        I, E = QuadTS(BigFloat)(f, 0.01, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0.01, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -404,17 +421,17 @@ using Test
         expect = BigFloat("8.386763233809718250439e-1")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, π, rtol=rtol)
+        I, E = quadts32(f, 0, π, rtol=rtol)
         @test isapprox(I, expect, atol=1e-5)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-11
-        I, E = QuadTS(Float64)(f, 0, π, rtol=rtol)
+        I, E = quadts64(f, 0, π, rtol=rtol)
         @test isapprox(I, expect, atol=1e-7)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-11
-        I, E = QuadTS(BigFloat)(f, 0, π, rtol=rtol)
+        I, E = quadtsBF(f, 0, π, rtol=rtol)
         @test isapprox(I, expect, atol=1e-7)
         @test E ≤ rtol*norm(I)
     end
@@ -426,17 +443,17 @@ using Test
         expect = -1
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-11
-        I, E = QuadTS(Float64)(f, 0, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -449,17 +466,17 @@ using Test
         expect = BigFloat("1.5643964440690497730914930158085e0")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, rtol=rtol)
+        I, E = quadts32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, rtol=rtol)
+        I, E = quadts64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadTS(BigFloat)(f, rtol=rtol)
+        I, E = quadtsBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -473,17 +490,17 @@ using Test
         expect = BigFloat("0.2108027355005492773756")
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, 0, 0.3, 0.5, 1, rtol=rtol)
+        I, E = quadts32(f, 0, 0.3, 0.5, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*3)
         @test E ≤ rtol*norm(I)*3
 
         rtol = 1e-13
-        I, E = QuadTS(Float64)(f, 0, 0.3, 0.5, 1, rtol=rtol)
+        I, E = quadts64(f, 0, 0.3, 0.5, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*3)
         @test E ≤ rtol*norm(I)*3
 
         rtol = 1e-17
-        I, E = QuadTS(BigFloat)(f, 0, 0.3, 0.5, 1, rtol=rtol)
+        I, E = quadtsBF(f, 0, 0.3, 0.5, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol*3)
         @test E ≤ rtol*norm(I)*3
     end
@@ -495,17 +512,17 @@ using Test
         expect = 1
 
         rtol = 1e-6
-        I, E = QuadES(Float32)(f, rtol=rtol)
+        I, E = quades32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadES(Float64)(f, rtol=rtol)
+        I, E = quades64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadES(BigFloat)(f, rtol=rtol)
+        I, E = quadesBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -516,17 +533,17 @@ using Test
         expect = BigFloat("5.77215664901532860606512090082e-1")  # γ constant
 
         rtol = 1e-6
-        I, E = QuadES(Float32)(f, rtol=rtol)
+        I, E = quades32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadES(Float64)(f, rtol=rtol)
+        I, E = quades64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadES(BigFloat)(f, rtol=rtol)
+        I, E = quadesBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -538,17 +555,17 @@ using Test
         expect = π
 
         rtol = 1e-6
-        I, E = QuadES(Float32)(f, rtol=rtol)
+        I, E = quades32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadES(Float64)(f, rtol=rtol)
+        I, E = quades64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadES(BigFloat)(f, rtol=rtol)
+        I, E = quadesBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -561,18 +578,18 @@ using Test
         expect = π
 
         rtol = 1e-6
-        I, E = QuadES(Float32)(f, rtol=rtol)
+        I, E = quades32(f, rtol=rtol)
         @test_broken isapprox(I, expect, rtol=10rtol)
         @test_skip E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadES(Float64)(f, rtol=rtol)
+        I, E = quades64(f, rtol=rtol)
         @test_broken isapprox(I, expect, rtol=10rtol)
         @test_skip E ≤ rtol*norm(I)
 
         # FIXME: Something wrong. Infinite loop?
         # rtol = 1e-17
-        # I, E = QuadES(BigFloat)(f, rtol=rtol)
+        # I, E = quadesBF(f, rtol=rtol)
         # @test_broken isapprox(I, expect, rtol=10rtol)
         # @test_skip E ≤ rtol*norm(I)
     end
@@ -585,17 +602,17 @@ using Test
         expect = sqrt(BigFloat(π))
 
         rtol = 1e-6
-        I, E = QuadSS(Float32)(f, rtol=rtol)
+        I, E = quadss32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadSS(Float64)(f, rtol=rtol)
+        I, E = quadss64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadSS(BigFloat)(f, rtol=rtol)
+        I, E = quadssBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -608,17 +625,17 @@ using Test
         expect = sqrt(BigFloat(π)/3)/(2*3)
 
         rtol = 1e-6
-        I, E = QuadSS(Float32)(f, rtol=rtol)
+        I, E = quadss32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadSS(Float64)(f, rtol=rtol)
+        I, E = quadss64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadSS(BigFloat)(f, rtol=rtol)
+        I, E = quadssBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -630,26 +647,20 @@ using Test
         expect = π
 
         rtol = 1e-6
-        I, E = QuadSS(Float32)(f, rtol=rtol)
+        I, E = quadss32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadSS(Float64)(f, rtol=rtol)
+        I, E = quadss64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-17
-        I, E = QuadSS(BigFloat)(f, rtol=rtol)
+        I, E = quadssBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
-
-
-    # Test QuadDE
-    quadde32 = QuadDE(Float32)
-    quadde64 = QuadDE(Float64)
-    quaddeBF = QuadDE(BigFloat)
 
 
     # Test integral interval [-1, 1] with QuadDE
@@ -1050,33 +1061,33 @@ using Test
         expect = [BigFloat(π)/2, BigFloat(π)]
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, rtol=rtol)
+        I, E = quadts32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, rtol=rtol)
+        I, E = quadts64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, rtol=rtol)
+        I, E = quadtsBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
 
         rtol = 1e-6
-        I, E = QuadTS(Float32)(f, -1, 0, 1, rtol=rtol)
+        I, E = quadts32(f, -1, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadTS(Float64)(f, -1, 0, 1, rtol=rtol)
+        I, E = quadts64(f, -1, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadTS(BigFloat)(f, -1, 0, 1, rtol=rtol)
+        I, E = quadtsBF(f, -1, 0, 1, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -1088,17 +1099,17 @@ using Test
         expect = [1, 2]
 
         rtol = 1e-6
-        I, E = QuadES(Float32)(f, rtol=rtol)
+        I, E = quades32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadES(Float64)(f, rtol=rtol)
+        I, E = quades64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadES(BigFloat)(f, rtol=rtol)
+        I, E = quadesBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
@@ -1110,17 +1121,17 @@ using Test
         expect = [sqrt(BigFloat(π)), 2*sqrt(BigFloat(π))]
 
         rtol = 1e-6
-        I, E = QuadSS(Float32)(f, rtol=rtol)
+        I, E = quadss32(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-14
-        I, E = QuadSS(Float64)(f, rtol=rtol)
+        I, E = quadss64(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
 
         rtol = 1e-30
-        I, E = QuadSS(BigFloat)(f, rtol=rtol)
+        I, E = quadssBF(f, rtol=rtol)
         @test isapprox(I, expect, rtol=10rtol)
         @test E ≤ rtol*norm(I)
     end
