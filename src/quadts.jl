@@ -44,7 +44,7 @@ function (q::QuadTS{T,N})(f::Function, a::Real, b::Real;
         q(f; kwargs...)
     else
         _atol = atol/(b - a)*2
-        f′(x) = f((b + a)/2 + (b - a)*x/2)
+        f′(u) = f((b + a)/2 + (b - a)*u/2)
         I, E = q(f′; atol=_atol, kwargs...)
         I*(b - a)/2, E*(b - a)/2
     end
@@ -53,13 +53,10 @@ function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;
                           kwargs...) where {T<:AbstractFloat,N}
     I, E = q(f, a, b; kwargs...)
     bc = (b, c...)
-    i = 2
-    n = length(bc)
-    while i <= n
+    for i in 2:length(bc)
         dI, dE = q(f, bc[i-1], bc[i]; kwargs...)
         I += dI
         E += dE
-        i += 1
     end
     I, E
 end
