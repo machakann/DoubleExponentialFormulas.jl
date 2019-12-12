@@ -12,7 +12,7 @@ export
     QuadSS,
     QuadDE
 
-const h0inv = 8
+const h0inv = 10
 
 function generate_tables end
 
