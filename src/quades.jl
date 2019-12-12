@@ -23,38 +23,26 @@ end
 
 function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    h0 = q.h0
     x0, w0 = q.origin
     I = f(x0)*w0
-    istart⁺ = startindex(f, q.tables⁺[1], 1)
-    I += trapez(f, q.tables⁺[1], I, istart⁺)
-    I += trapez(f, q.tables⁻[1], I, 1)
+    h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
-    istart⁺ = max(1, istart⁺ - 1)
-    for level in 1:(N-1)
+    sample(t) = f(t[1])*t[2]
+    istart⁺ = 1
+    for level in 0:(N-1)
         prevIh = Ih
+        istart⁺ = startindex(f, q.tables⁺[1], istart⁺)
+        iend⁺ = length(q.tables⁺[level+1])
+        I += sum(sample, view(q.tables⁺[level+1], istart⁺:iend⁺))
+        I += sum(sample, q.tables⁻[level+1])
         h = h0/2^level
-        I += trapez(f, q.tables⁺[level+1], I, istart⁺)
-        I += trapez(f, q.tables⁻[level+1], I, 1)
         Ih = I*h
         E = norm(prevIh - Ih)
-        !(E > max(norm(Ih)*rtol, atol)) && break
-        istart⁺ *= 2
+        !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
+        istart⁺ = 2*istart⁺ - 1
     end
     Ih, E
-end
-
-
-function trapez(f::Function, wt::QuadESWeightTable{T}, I,
-                istart::Integer) where {T<:AbstractFloat}
-    dI = zero(I)
-    iend = length(wt)
-    for i in istart:iend
-        x, w = wt[i]
-        dI += f(x)*w
-    end
-    dI
 end
 
 

@@ -15,7 +15,6 @@ export
 const h0inv = 8
 
 function generate_tables end
-function trapez end
 
 function quadde end
 

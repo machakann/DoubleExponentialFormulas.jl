@@ -22,19 +22,19 @@ end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    h0 = q.h0
     x0, w0 = q.origin
     I = f(x0)*w0
-    I += trapez(f, q.tables[1], I)
+    h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
-    for level in 1:(N-1)
+    sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
+    for level in 0:(N-1)
         prevIh = Ih
+        I += sum(sample, q.tables[level+1])
         h = h0/2^level
-        I += trapez(f, q.tables[level+1], I)
         Ih = I*h
         E = norm(prevIh - Ih)
-        !(E > max(norm(Ih)*rtol, atol)) && break
+        !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
     end
     Ih, E
 end
@@ -68,16 +68,6 @@ function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;
         E += dE
     end
     I, E
-end
-
-
-function trapez(f::Function, wt::QuadTSWeightTable{T}, I) where {T<:AbstractFloat}
-    dI = zero(I)
-    for (x, w) in wt
-        dI += f(x)*w
-        dI += f(-x)*w
-    end
-    dI
 end
 
 
