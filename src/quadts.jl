@@ -30,7 +30,7 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     for level in 0:(N-1)
         prevIh = Ih
-        I += sum(sample, q.tables[level+1])
+        I += sum_pairwise(sample, q.tables[level+1])
         h = h0/2^level
         Ih = I*h
         E = norm(prevIh - Ih)

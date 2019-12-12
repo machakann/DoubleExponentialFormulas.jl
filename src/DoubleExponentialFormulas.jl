@@ -53,4 +53,17 @@ end
 isnotnan(x) = !isnan(x)
 
 
+"""
+    sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr))
+
+Return total summation of items in `itr` from `istart`-th through `iend`-th
+ with applying a function `f`. This function uses pairwise summation algorithm
+ to reduce numerical error as possible.
+
+NOTE: This function doesn't check `istart` and `iend`. Be careful to use.
+"""
+sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr)) =
+    Base.mapreduce_impl(f, +, itr, istart, iend)
+
+
 end # module

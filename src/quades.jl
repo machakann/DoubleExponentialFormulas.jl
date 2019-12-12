@@ -33,9 +33,8 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
     for level in 0:(N-1)
         prevIh = Ih
         istart⁺ = startindex(f, q.tables⁺[1], istart⁺)
-        iend⁺ = length(q.tables⁺[level+1])
-        I += sum(sample, view(q.tables⁺[level+1], istart⁺:iend⁺))
-        I += sum(sample, q.tables⁻[level+1])
+        I += sum_pairwise(sample, q.tables⁺[level+1], istart⁺)
+        I += sum_pairwise(sample, q.tables⁻[level+1])
         h = h0/2^level
         Ih = I*h
         E = norm(prevIh - Ih)
