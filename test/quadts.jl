@@ -323,18 +323,18 @@ let
     I, E = quadts32(f, 0, 0.5, 10)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)*2
+    @test E ≤ sqrt(eps(I))*norm(I)
 
     I, E = quadts64(f, 0, 0.5, 10)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)*2
+    @test E ≤ sqrt(eps(I))*norm(I)
 
     rtol = 1e-10
     I, E = quadtsBF(f, 0, 0.5, 10, rtol=rtol)
     @test I isa BigFloat
     @test isapprox(I, expect, rtol=10rtol*2)
-    @test E ≤ rtol*norm(I)*2
+    @test E ≤ rtol*norm(I)
 end
 
 
@@ -348,18 +348,18 @@ let
     I, E = quadts32(f, 0, 1, 10)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)*2
+    @test E ≤ sqrt(eps(I))*norm(I)
 
     I, E = quadts64(f, 0, 1, 10)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)*2
+    @test E ≤ sqrt(eps(I))*norm(I)
 
     rtol = 1e-30
     I, E = quadtsBF(f, 0, 1, 10, rtol=rtol)
     @test I isa BigFloat
     @test isapprox(I, expect, rtol=10rtol*2)
-    @test E ≤ rtol*norm(I)*2
+    @test E ≤ rtol*norm(I)
 end
 
 
@@ -493,18 +493,18 @@ let
     I, E = quadts32(f, 0, 0.3, 0.5, 1, rtol=1e-6)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)*3
+    @test E ≤ sqrt(eps(I))*norm(I)
 
     I, E = quadts64(f, 0, 0.3, 0.5, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)*3
+    @test E ≤ sqrt(eps(I))*norm(I)
 
     rtol = 1e-21
     I, E = quadtsBF(f, 0, 0.3, 0.5, 1, rtol=rtol)
     @test I isa BigFloat
     @test isapprox(I, expect, rtol=10rtol*3)
-    @test E ≤ rtol*norm(I)*3
+    @test E ≤ rtol*norm(I)
 end
 
 

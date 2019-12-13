@@ -29,45 +29,107 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     E = zero(eltype(Ih))
     sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     for level in 0:(N-1)
-        prevIh = Ih
         I += sum_pairwise(sample, q.tables[level+1])
         h = h0/2^level
+        prevIh = Ih
         Ih = I*h
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
     end
     Ih, E
 end
-function (q::QuadTS{T,N})(f::Function, a::Real, b::Real;
-                          atol=zero(T), kwargs...) where {T<:AbstractFloat,N}
+function (q::QuadTS{T,N})(f::Function, intervals::Tuple{Real,Real,Vararg{Real}};
+                          atol::Real=zero(T), rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
+    x0, w0 = q.origin
+    I = init(f, x0, w0, intervals)
+    h0 = q.h0
+    Ih = I*h0
+    E = zero(eltype(Ih))
+    for level in 0:(N-1)
+        # FIXME: This anonymous function is not necessarily in principle, but
+        #        memory usage increases and execution time gets longer if it is
+        #        omitted. I don't know why. It should be equal to
+        #        `increment(f, x0, w0, intervals)`
+        I += increment(x -> f(x), q.tables[level+1], intervals)
+        h = h0/2^level
+        prevIh = Ih
+        Ih = I*h
+        E = norm(prevIh - Ih)
+        !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
+    end
+    Ih, E
+end
+(q::QuadTS{T,N})(f::Function, a::Real, b::Real; kwargs...) where {T<:AbstractFloat,N} = q(f, (a, b); kwargs...)
+(q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...; kwargs...) where {T<:AbstractFloat,N} = q(f, (a, b, c...); kwargs...)
+
+
+function init(f::Function, x0::T, w0::T, a::T, b::T) where {T<:AbstractFloat}
+    if a == b
+        zero(f(a)), zero(T)
+    end
+
     if a > b
-        I, E = q(f, b, a; kwargs...)
-        -I, E
+        return -init(f, x0, w0, b, a)
+    end
+
+    if a == -1 && b == 1
+        return f(x0)*w0
+    end
+
+    s = b + a
+    t = b - a
+    f′(u) = f((s + t*u)/2)
+    return f′(x0)*w0*t/2
+end
+function init(f::Function, x0::T, w0::T, intervals) where {T<:AbstractFloat}
+    n = length(intervals)
+    a = T(intervals[1])
+    b = T(intervals[2])
+    I = init(f, x0, w0, a, b)
+    for i in 3:n
+        a = T(intervals[i-1])
+        b = T(intervals[i])
+        I += init(f, x0, w0, a, b)
+    end
+    I
+end
+
+
+function increment(f::Function, table::QuadTSWeightTable{T}, a::T, b::T) where {T<:AbstractFloat}
+    if a == b
+        zero(f(a))
+    end
+
+    if a > b
+        -increment(f, table, b, a)
+    end
+
+    sampling_function(f::Function) = xw -> begin
+        x, w = xw
+        f(x)*w + f(-x)*w
+    end
+
+    if a == -1 && b == 1
+        sum_pairwise(sampling_function(f), table)
     else
-        if a == -1 && b == 1
-            q(f; kwargs...)
-        else
-            a′ = T(a)
-            b′ = T(b)
-            s = b′ + a′
-            t = b′ - a′
-            atol′ = atol/t*2
-            f′(u) = f((s + t*u)/2)
-            I, E = q(f′; atol=atol′, kwargs...)
-            I*t/2, E*t/2
-        end
+        s = b + a
+        t = b - a
+        f′(u) = f((s + t*u)/2)
+        I = sum_pairwise(sampling_function(f′), table)
+        I*t/2
     end
 end
-function (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...;
-                          kwargs...) where {T<:AbstractFloat,N}
-    I, E = q(f, a, b; kwargs...)
-    bc = (b, c...)
-    for i in 2:length(bc)
-        dI, dE = q(f, bc[i-1], bc[i]; kwargs...)
-        I += dI
-        E += dE
+function increment(f::Function, table::QuadTSWeightTable{T}, intervals) where {T<:AbstractFloat}
+    n = length(intervals)
+    a = T(intervals[1])
+    b = T(intervals[2])
+    I = increment(f, table, a, b)
+    for i in 3:n
+        a = T(intervals[i-1])
+        b = T(intervals[i])
+        I += increment(f, table, a, b)
     end
-    I, E
+    I
 end
 
 
