@@ -32,7 +32,7 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
     istart⁺ = 1
     for level in 0:(N-1)
         prevIh = Ih
-        istart⁺ = startindex(f, q.tables⁺[1], istart⁺)
+        istart⁺ = startindex(f, q.tables⁺[level+1], istart⁺)
         I += sum_pairwise(sample, q.tables⁺[level+1], istart⁺)
         I += sum_pairwise(sample, q.tables⁻[level+1])
         h = h0/2^level
