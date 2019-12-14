@@ -13,7 +13,7 @@ struct QuadSS{T<:AbstractFloat,N}
     origin::Tuple{T,T}
     tables::NTuple{N,QuadSSWeightTable{T}}
 end
-function QuadSS(T::Type{<:AbstractFloat}; maxlevel::Integer=8, h0::Real=one(T)/8)
+function QuadSS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
     @assert maxlevel > 0
     t0 = zero(T)
     tables, origin = generate_tables(QuadSSWeightTable, maxlevel, T(h0))
