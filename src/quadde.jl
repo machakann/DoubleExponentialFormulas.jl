@@ -1,4 +1,5 @@
 using LinearAlgebra: norm
+using Printf: @printf
 
 
 struct QuadDE{T<:AbstractFloat,N}
@@ -70,4 +71,9 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
         E += dE
     end
     return Ih, E
+end
+
+function Base.show(io::IO, ::MIME"text/plain", q::QuadDE{T,N}) where {T<:AbstractFloat,N}
+    @printf("DoubleExponentialFormulas.QuadDE{%s}: maxlevel=%d, h0=%.3e",
+            string(T), N, q.qts.h0)
 end

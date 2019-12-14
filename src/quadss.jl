@@ -1,4 +1,5 @@
 using LinearAlgebra: norm
+using Printf: @printf
 
 
 struct QuadSSWeightTable{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
@@ -46,6 +47,11 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
         istart⁻ = 2*istart⁻ - 1
     end
     return Ih, E
+end
+
+function Base.show(io::IO, ::MIME"text/plain", q::QuadSS{T,N}) where {T<:AbstractFloat,N}
+    @printf("DoubleExponentialFormulas.QuadSS{%s}: maxlevel=%d, h0=%.3e",
+            string(T), N, q.h0)
 end
 
 
