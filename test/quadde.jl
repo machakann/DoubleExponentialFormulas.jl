@@ -287,6 +287,45 @@ let
 end
 
 
+# Test ∫f(x)dx = 0 in [a, b] if a == b
+let
+    a = rand(Int)
+
+    # Odd function
+    I, E = quadde32(x -> x, a, a)
+    @test I isa Float32
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(I))*norm(I)
+
+    I, E = quadde64(x -> x, a, a)
+    @test I isa Float64
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(I))*norm(I)
+
+    I, E = quaddeBF(x -> x, a, a)
+    @test I isa BigFloat
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(I))*norm(I)
+
+
+    # Even function
+    I, E = quadde32(x -> x^2, a, a)
+    @test I isa Float32
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(I))*norm(I)
+
+    I, E = quadde64(x -> x^2, a, a)
+    @test I isa Float64
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(I))*norm(I)
+
+    I, E = quaddeBF(x -> x^2, a, a)
+    @test I isa BigFloat
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(I))*norm(I)
+end
+
+
 # Test anti-symmetric equivalence when switching inteval limits with QuadDE
 # ∫f(x)dx in [a, b] = -∫f(x)dx in [b, a]
 let
