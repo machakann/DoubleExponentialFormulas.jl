@@ -32,12 +32,13 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
     istart⁺ = 1
     istart⁻ = 1
     for level in 0:(N-1)
-        prevIh = Ih
         table = q.tables[level+1]
         istart⁺ = startindex(f⁺, table, istart⁺)
         istart⁻ = startindex(f⁻, table, istart⁻)
-        I += increment(f, table, istart⁺, istart⁻)
+        I += sum_pairwise(t -> f⁺(t[1])*t[2], table, istart⁺)
+        I += sum_pairwise(t -> f⁻(t[1])*t[2], table, istart⁻)
         h = h0/2^level
+        prevIh = Ih
         Ih = I*h
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
@@ -45,14 +46,6 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
         istart⁻ = 2*istart⁻ - 1
     end
     Ih, E
-end
-
-
-function increment(f::Function, table::QuadSSWeightTable{T},
-                   istart⁺::Integer, istart⁻::Integer) where {T<:AbstractFloat}
-    I  = sum_pairwise(t -> f( t[1])*t[2], table, istart⁺)
-    I += sum_pairwise(t -> f(-t[1])*t[2], table, istart⁻)
-    return I
 end
 
 

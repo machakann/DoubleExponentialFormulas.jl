@@ -30,26 +30,19 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
     E = zero(eltype(Ih))
     istart⁺ = 1
     for level in 0:(N-1)
-        prevIh = Ih
-        istart⁺ = startindex(f, q.tables⁺[level+1], istart⁺)
-        I += increment(f, q.tables⁺[level+1], q.tables⁻[level+1], istart⁺)
+        table⁺ = q.tables⁺[level+1]
+        table⁻ = q.tables⁻[level+1]
+        istart⁺ = startindex(f, table⁺, istart⁺)
+        I += sum_pairwise(t -> f(t[1])*t[2], table⁺, istart⁺)
+        I += sum_pairwise(t -> f(t[1])*t[2], table⁻)
         h = h0/2^level
+        prevIh = Ih
         Ih = I*h
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
         istart⁺ = 2*istart⁺ - 1
     end
     Ih, E
-end
-
-
-function increment(f::Function,
-                   table⁺::QuadESWeightTable{T},
-                   table⁻::QuadESWeightTable{T},
-                   istart⁺::Integer) where {T<:AbstractFloat}
-    I  = sum_pairwise(t -> f(t[1])*t[2], table⁺, istart⁺)
-    I += sum_pairwise(t -> f(t[1])*t[2], table⁻)
-    return I
 end
 
 
@@ -60,7 +53,6 @@ function generate_tables(::Type{QuadESWeightTable}, maxlevel::Integer, h0::T) wh
     tables⁻ = Vector{QuadESWeightTable}(undef, maxlevel+1)
     for level in 0:maxlevel
         h = h0/2^level
-
         k = 1
         step = level == 0 ? 1 : 2
         table⁺ = Tuple{T,T}[]
