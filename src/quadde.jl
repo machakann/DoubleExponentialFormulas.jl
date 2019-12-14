@@ -11,7 +11,7 @@ function QuadDE(T::Type{<:AbstractFloat}; maxlevel::Integer=10, kwargs...)
     qts = QuadTS(T; maxlevel=maxlevel, kwargs...)
     qes = QuadES(T; maxlevel=maxlevel, kwargs...)
     qss = QuadSS(T; maxlevel=maxlevel, kwargs...)
-    QuadDE{T,maxlevel}(qts, qes, qss)
+    return QuadDE{T,maxlevel}(qts, qes, qss)
 end
 
 function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
@@ -69,5 +69,5 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
         Ih += dIh
         E += dE
     end
-    Ih, E
+    return Ih, E
 end

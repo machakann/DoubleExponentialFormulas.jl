@@ -18,7 +18,7 @@ function QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/
     @assert maxlevel > 0
     t0 = zero(T)
     tables⁺, tables⁻, origin = generate_tables(QuadESWeightTable, maxlevel, T(h0))
-    QuadES{T,maxlevel}(T(h0), origin, tables⁺, tables⁻)
+    return QuadES{T,maxlevel}(T(h0), origin, tables⁺, tables⁻)
 end
 
 function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
@@ -42,7 +42,7 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
         !(E > max(norm(Ih)*rtol, atol)) && level > 1 && break
         istart⁺ = 2*istart⁺ - 1
     end
-    Ih, E
+    return Ih, E
 end
 
 
@@ -88,5 +88,5 @@ function generate_tables(::Type{QuadESWeightTable}, maxlevel::Integer, h0::T) wh
     x0 = ϕ(zero(T))
     w0 = ϕ′(zero(T))
     origin = (x0, w0)
-    Tuple(tables⁺), Tuple(tables⁻), origin
+    return Tuple(tables⁺), Tuple(tables⁻), origin
 end

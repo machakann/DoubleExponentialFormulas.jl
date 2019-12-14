@@ -17,7 +17,7 @@ function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/
     @assert maxlevel > 0
     t0 = zero(T)
     tables, origin = generate_tables(QuadTSWeightTable, maxlevel, T(h0))
-    QuadTS{T,maxlevel}(T(h0), origin, tables)
+    return QuadTS{T,maxlevel}(T(h0), origin, tables)
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
@@ -36,7 +36,7 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
         E = norm(prevIh - Ih)
         !(E > max(norm(Ih)*rtol, atol)) && level > 1 && break
     end
-    Ih, E
+    return Ih, E
 end
 
 
@@ -65,5 +65,5 @@ function generate_tables(::Type{QuadTSWeightTable}, maxlevel::Integer, h0::T) wh
     x0 = ϕ(zero(T))
     w0 = ϕ′(zero(T))
     origin = (x0, w0)
-    Tuple(tables), origin
+    return Tuple(tables), origin
 end
