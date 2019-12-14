@@ -28,13 +28,11 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
-    sample(t) = f(t[1])*t[2]
     istart⁺ = 1
     for level in 0:(N-1)
         prevIh = Ih
         istart⁺ = startindex(f, q.tables⁺[level+1], istart⁺)
-        I += sum_pairwise(sample, q.tables⁺[level+1], istart⁺)
-        I += sum_pairwise(sample, q.tables⁻[level+1])
+        I += increment(f, q.tables⁺[level+1], q.tables⁻[level+1], istart⁺)
         h = h0/2^level
         Ih = I*h
         E = norm(prevIh - Ih)
@@ -42,6 +40,16 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
         istart⁺ = 2*istart⁺ - 1
     end
     Ih, E
+end
+
+
+function increment(f::Function,
+                   table⁺::QuadESWeightTable{T},
+                   table⁻::QuadESWeightTable{T},
+                   istart⁺::Integer) where {T<:AbstractFloat}
+    I  = sum_pairwise(t -> f(t[1])*t[2], table⁺, istart⁺)
+    I += sum_pairwise(t -> f(t[1])*t[2], table⁻)
+    return I
 end
 
 

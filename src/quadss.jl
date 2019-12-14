@@ -23,14 +23,12 @@ end
 function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     f⁺ = f
-    f⁻ = x -> f(-x)
+    f⁻ = u -> f(-u)
     x0, w0 = q.origin
     I = f(x0)*w0
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
-    sample⁺(t) = f⁺(t[1])*t[2]
-    sample⁻(t) = f⁻(t[1])*t[2]
     istart⁺ = 1
     istart⁻ = 1
     for level in 0:(N-1)
@@ -38,8 +36,7 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
         table = q.tables[level+1]
         istart⁺ = startindex(f⁺, table, istart⁺)
         istart⁻ = startindex(f⁻, table, istart⁻)
-        I += sum_pairwise(sample⁺, table, istart⁺)
-        I += sum_pairwise(sample⁻, table, istart⁻)
+        I += increment(f, table, istart⁺, istart⁻)
         h = h0/2^level
         Ih = I*h
         E = norm(prevIh - Ih)
@@ -48,6 +45,14 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
         istart⁻ = 2*istart⁻ - 1
     end
     Ih, E
+end
+
+
+function increment(f::Function, table::QuadSSWeightTable{T},
+                   istart⁺::Integer, istart⁻::Integer) where {T<:AbstractFloat}
+    I  = sum_pairwise(t -> f( t[1])*t[2], table, istart⁺)
+    I += sum_pairwise(t -> f(-t[1])*t[2], table, istart⁻)
+    return I
 end
 
 

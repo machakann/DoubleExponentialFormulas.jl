@@ -40,8 +40,7 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
 end
 function (q::QuadTS{T,N})(f::Function, intervals::Tuple{Real,Real,Vararg{Real}};
                           atol::Real=zero(T), rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    x0, w0 = q.origin
-    I = init(f, x0, w0, intervals)
+    I = init(f, q, intervals)
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
@@ -63,45 +62,48 @@ end
 (q::QuadTS{T,N})(f::Function, a::Real, b::Real, c::Real...; kwargs...) where {T<:AbstractFloat,N} = q(f, (a, b, c...); kwargs...)
 
 
-function init(f::Function, x0::T, w0::T, a::T, b::T) where {T<:AbstractFloat}
-    if a == b
-        zero(f(a)), zero(T)
+function init(f::Function, q::QuadTS{T,N}, a::Real, b::Real) where {T<:AbstractFloat,N}
+    x0, w0 = q.origin
+    if a > b
+        return -init(f, q, b, a)
     end
 
-    if a > b
-        return -init(f, x0, w0, b, a)
+    if a == b
+        zero(f(a)), zero(T)
     end
 
     if a == -1 && b == 1
         return f(x0)*w0
     end
 
-    s = b + a
-    t = b - a
+    _a = T(a)
+    _b = T(b)
+    s = _b + _a
+    t = _b - _a
     f′(u) = f((s + t*u)/2)
     return f′(x0)*w0*t/2
 end
-function init(f::Function, x0::T, w0::T, intervals) where {T<:AbstractFloat}
+function init(f::Function, q::QuadTS{T,N}, intervals) where {T<:AbstractFloat,N}
     n = length(intervals)
-    a = T(intervals[1])
-    b = T(intervals[2])
-    I = init(f, x0, w0, a, b)
+    a = intervals[1]
+    b = intervals[2]
+    I = init(f, q, a, b)
     for i in 3:n
-        a = T(intervals[i-1])
-        b = T(intervals[i])
-        I += init(f, x0, w0, a, b)
+        a = intervals[i-1]
+        b = intervals[i]
+        I += init(f, q, a, b)
     end
     I
 end
 
 
-function increment(f::Function, table::QuadTSWeightTable{T}, a::T, b::T) where {T<:AbstractFloat}
-    if a == b
-        zero(f(a))
-    end
-
+function increment(f::Function, table::QuadTSWeightTable{T}, a::Real, b::Real) where {T<:AbstractFloat}
     if a > b
         -increment(f, table, b, a)
+    end
+
+    if a == b
+        zero(f(a))
     end
 
     sampling_function(f::Function) = xw -> begin
@@ -112,8 +114,10 @@ function increment(f::Function, table::QuadTSWeightTable{T}, a::T, b::T) where {
     if a == -1 && b == 1
         sum_pairwise(sampling_function(f), table)
     else
-        s = b + a
-        t = b - a
+        _a = T(a)
+        _b = T(b)
+        s = _b + _a
+        t = _b - _a
         f′(u) = f((s + t*u)/2)
         I = sum_pairwise(sampling_function(f′), table)
         I*t/2
@@ -121,12 +125,12 @@ function increment(f::Function, table::QuadTSWeightTable{T}, a::T, b::T) where {
 end
 function increment(f::Function, table::QuadTSWeightTable{T}, intervals) where {T<:AbstractFloat}
     n = length(intervals)
-    a = T(intervals[1])
-    b = T(intervals[2])
+    a = intervals[1]
+    b = intervals[2]
     I = increment(f, table, a, b)
     for i in 3:n
-        a = T(intervals[i-1])
-        b = T(intervals[i])
+        a = intervals[i-1]
+        b = intervals[i]
         I += increment(f, table, a, b)
     end
     I
