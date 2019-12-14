@@ -16,7 +16,18 @@ end
 end
 
 # QuadDE is the general purpose numerical integrator
-# If one wants to know how to use, the only file they should check is this.
+# NOTE: If one wants to know how to use, the only files they should check are
+#       the below items.
 @testset "QuadDE" begin
-    include("quadde.jl")
+    @testset "Varius intervals" begin
+        include("quadde/intervals.jl")
+    end
+
+    @testset "Basic principles" begin
+        include("quadde/principles.jl")
+    end
+
+    @testset "Kahaner's problems" begin
+        include("quadde/Kahaner.jl")
+    end
 end
