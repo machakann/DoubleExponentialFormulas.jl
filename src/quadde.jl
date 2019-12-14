@@ -63,12 +63,14 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     bc = (b, c...)
     n = length(bc)
+    _atol = atol/n
+    _rtol = rtol/n
     # FIXME: This anonymous function is not necessarily in principle, but
     #        memory usage increases and execution time gets longer if it is
     #        omitted. I don't know why.
-    Ih, E = q(x -> f(x), a, b; atol=atol/n, rtol=rtol/n)
+    Ih, E = q(x -> f(x), a, b; atol=_atol, rtol=_rtol)
     for i in 2:n
-        dIh, dE = q(x -> f(x), bc[i-1], bc[i]; atol=atol/n, rtol=rtol/n)
+        dIh, dE = q(x -> f(x), bc[i-1], bc[i]; atol=_atol, rtol=_rtol)
         Ih += dIh
         E += dE
     end
