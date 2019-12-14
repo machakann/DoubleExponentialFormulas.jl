@@ -14,7 +14,7 @@ struct QuadES{T<:AbstractFloat,N}
     tables⁺::NTuple{N,QuadESWeightTable{T}}
     tables⁻::NTuple{N,QuadESWeightTable{T}}
 end
-function QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/h0inv)
+function QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
     @assert maxlevel > 0
     t0 = zero(T)
     tables⁺, tables⁻, origin = generate_tables(QuadESWeightTable, maxlevel, T(h0))
