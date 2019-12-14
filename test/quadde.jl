@@ -332,101 +332,143 @@ let
     f(x::AbstractFloat) = exp(-x^2)
 
     # [-1, 1]
-    I1, _ = quadde32(f, -1, 1)
-    I2, _ = quadde32(f, 1, -1)
+    I1, E1 = quadde32(f, -1, 1)
+    I2, E2 = quadde32(f, 1, -1)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, -1, 1)
-    I2, E = quadde64(f, 1, -1)
+    I1, E1 = quadde64(f, -1, 1)
+    I2, E2 = quadde64(f, 1, -1)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, -1, 1)
-    I2, E = quaddeBF(f, 1, -1)
+    I1, E1 = quaddeBF(f, -1, 1)
+    I2, E2 = quaddeBF(f, 1, -1)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
 
     # [a, b] (a and b are finite numbers)
-    I1, _ = quadde32(f, -2, 2)
-    I2, _ = quadde32(f, 2, -2)
+    I1, E1 = quadde32(f, -2, 2)
+    I2, E2 = quadde32(f, 2, -2)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, -2, 2)
-    I2, E = quadde64(f, 2, -2)
+    I1, E1 = quadde64(f, -2, 2)
+    I2, E2 = quadde64(f, 2, -2)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, -2, 2)
-    I2, E = quaddeBF(f, 2, -2)
+    I1, E1 = quaddeBF(f, -2, 2)
+    I2, E2 = quaddeBF(f, 2, -2)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
 
     # [0, ∞]
-    I1, _ = quadde32(f, 0, Inf)
-    I2, _ = quadde32(f, Inf, 0)
+    I1, E1 = quadde32(f, 0, Inf)
+    I2, E2 = quadde32(f, Inf, 0)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, 0, Inf)
-    I2, E = quadde64(f, Inf, 0)
+    I1, E1 = quadde64(f, 0, Inf)
+    I2, E2 = quadde64(f, Inf, 0)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, 0, Inf)
-    I2, E = quaddeBF(f, Inf, 0)
+    I1, E1 = quaddeBF(f, 0, Inf)
+    I2, E2 = quaddeBF(f, Inf, 0)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
 
     # [a, ∞]
-    I1, _ = quadde32(f, 2, Inf)
-    I2, _ = quadde32(f, Inf, 2)
+    I1, E1 = quadde32(f, 2, Inf)
+    I2, E2 = quadde32(f, Inf, 2)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, 2, Inf)
-    I2, E = quadde64(f, Inf, 2)
+    I1, E1 = quadde64(f, 2, Inf)
+    I2, E2 = quadde64(f, Inf, 2)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, 2, Inf)
-    I2, E = quaddeBF(f, Inf, 2)
+    I1, E1 = quaddeBF(f, 2, Inf)
+    I2, E2 = quaddeBF(f, Inf, 2)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
 
     # [-∞, 0]
-    I1, _ = quadde32(f, -Inf, 0)
-    I2, _ = quadde32(f, 0, -Inf)
+    I1, E1 = quadde32(f, -Inf, 0)
+    I2, E2 = quadde32(f, 0, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, -Inf, 0)
-    I2, E = quadde64(f, 0, -Inf)
+    I1, E1 = quadde64(f, -Inf, 0)
+    I2, E2 = quadde64(f, 0, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, -Inf, 0)
-    I2, E = quaddeBF(f, 0, -Inf)
+    I1, E1 = quaddeBF(f, -Inf, 0)
+    I2, E2 = quaddeBF(f, 0, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
 
     # [-∞, b]
-    I1, _ = quadde32(f, -Inf, 2)
-    I2, _ = quadde32(f, 2, -Inf)
+    I1, E1 = quadde32(f, -Inf, 2)
+    I2, E2 = quadde32(f, 2, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, -Inf, 2)
-    I2, E = quadde64(f, 2, -Inf)
+    I1, E1 = quadde64(f, -Inf, 2)
+    I2, E2 = quadde64(f, 2, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, -Inf, 2)
-    I2, E = quaddeBF(f, 2, -Inf)
+    I1, E1 = quaddeBF(f, -Inf, 2)
+    I2, E2 = quaddeBF(f, 2, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
 
     # [-∞, ∞]
-    I1, _ = quadde32(f, -Inf, Inf)
-    I2, _ = quadde32(f, Inf, -Inf)
+    I1, E1 = quadde32(f, -Inf, Inf)
+    I2, E2 = quadde32(f, Inf, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quadde64(f, -Inf, Inf)
-    I2, E = quadde64(f, Inf, -Inf)
+    I1, E1 = quadde64(f, -Inf, Inf)
+    I2, E2 = quadde64(f, Inf, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 
-    I1, E = quaddeBF(f, -Inf, Inf)
-    I2, E = quaddeBF(f, Inf, -Inf)
+    I1, E1 = quaddeBF(f, -Inf, Inf)
+    I2, E2 = quaddeBF(f, Inf, -Inf)
     @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
 end
 
 
