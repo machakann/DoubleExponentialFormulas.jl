@@ -472,6 +472,174 @@ let
 end
 
 
+# Parity check for even function
+let
+    # Even function
+    f(x::AbstractFloat) = exp(-x^2)
+
+    # ∫f(x)dx in [a, b] == ∫f(x)dx in [-b, -a] if f(x) is an even function
+    I1, E1 = quadde32(f,  0, 1)
+    I2, E2 = quadde32(f, -1, 0)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  0, 1)
+    I2, E2 = quadde64(f, -1, 0)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  0, 1)
+    I2, E2 = quaddeBF(f, -1, 0)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+
+    I1, E1 = quadde32(f,  1,  2)
+    I2, E2 = quadde32(f, -2, -1)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  1,  2)
+    I2, E2 = quadde64(f, -2, -1)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  1,  2)
+    I2, E2 = quaddeBF(f, -2, -1)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+
+    # ∫f(x)dx in [a, ∞] == ∫f(x)dx in [-∞, -a] if f(x) is an even function
+    I1, E1 = quadde32(f,  0, Inf)
+    I2, E2 = quadde32(f, -Inf, 0)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  0, Inf)
+    I2, E2 = quadde64(f, -Inf, 0)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  0, Inf)
+    I2, E2 = quaddeBF(f, -Inf, 0)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+
+    I1, E1 = quadde32(f,  Inf,  2)
+    I2, E2 = quadde32(f, -2, -Inf)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  Inf,  2)
+    I2, E2 = quadde64(f, -2, -Inf)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  Inf,  2)
+    I2, E2 = quaddeBF(f, -2, -Inf)
+    @test I1 ≈ I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+end
+
+
+# Parity check for odd function
+let
+    # Odd function
+    f(x::AbstractFloat) = x*exp(-x^2)
+
+    # ∫f(x)dx in [a, b] == -∫f(x)dx in [-b, -a] if f(x) is an odd function
+    I1, E1 = quadde32(f,  0, 1)
+    I2, E2 = quadde32(f, -1, 0)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  0, 1)
+    I2, E2 = quadde64(f, -1, 0)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  0, 1)
+    I2, E2 = quaddeBF(f, -1, 0)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+
+    I1, E1 = quadde32(f,  1,  2)
+    I2, E2 = quadde32(f, -2, -1)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  1,  2)
+    I2, E2 = quadde64(f, -2, -1)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  1,  2)
+    I2, E2 = quaddeBF(f, -2, -1)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+
+    # ∫f(x)dx in [a, ∞] == ∫f(x)dx in [-∞, -a] if f(x) is an odd function
+    I1, E1 = quadde32(f,  0, Inf)
+    I2, E2 = quadde32(f, -Inf, 0)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  0, Inf)
+    I2, E2 = quadde64(f, -Inf, 0)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  0, Inf)
+    I2, E2 = quaddeBF(f, -Inf, 0)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+
+    I1, E1 = quadde32(f,  Inf,  2)
+    I2, E2 = quadde32(f, -2, -Inf)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quadde64(f,  Inf,  2)
+    I2, E2 = quadde64(f, -2, -Inf)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+
+    I1, E1 = quaddeBF(f,  Inf,  2)
+    I2, E2 = quaddeBF(f, -2, -Inf)
+    @test I1 ≈ -I2
+    @test E1 ≤ sqrt(eps(I1))*norm(I1)
+    @test E2 ≤ sqrt(eps(I2))*norm(I2)
+end
+
+
 # Test integrals are cited from:
 # Kahaner, D.K.: Comparison of numerical quadrature formulas, Mathematical
 # software, Rice, J.R. (Ed.), Academic Press. pp.229-259 (1971)
