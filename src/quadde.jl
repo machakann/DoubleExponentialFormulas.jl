@@ -22,7 +22,7 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
     end
 
     if a == b
-        return zero(f(a)), zero(T)
+        return zero(f(T(a))), zero(T)
     end
 
     if a == -Inf && b == Inf
