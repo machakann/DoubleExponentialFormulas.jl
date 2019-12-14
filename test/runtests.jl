@@ -1,6 +1,6 @@
 using Test
 
-# QuadTS is for numerical integration in [a, b] where a and b are finite numbers
+# QuadTS is for numerical integration in [-1, 1]
 @testset "QuadTS" begin
     include("quadts.jl")
 end

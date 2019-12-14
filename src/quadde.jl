@@ -46,7 +46,16 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
         end
     else
         # integrate over [a, b]
-        return q.qts(f, a, b; kwargs...)
+        if a == -1 && b == 1
+            return q.qts(f; kwargs...)
+        else
+            _a = T(a)
+            _b = T(b)
+            s = _b + _a
+            t = _b - _a
+            Ih, E = q.qts(u -> f((s + t*u)/2); kwargs...)
+            return Ih*t/2, E*t/2
+        end
     end
 end
 function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
