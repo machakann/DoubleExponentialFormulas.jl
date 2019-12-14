@@ -33,16 +33,14 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
         if a == 0
             return q.qes(f; kwargs...)
         else
-            _a = T(a)
-            return q.qes(u -> f(u + _a); kwargs...)
+            return q.qes(u -> f(u + T(a)); kwargs...)
         end
     elseif a == -Inf
         # integrate over [-∞, b]
         if b == 0
             return q.qes(u -> f(-u); kwargs...)
         else
-            _b = T(b)
-            return q.qes(u -> f(-u + _b); kwargs...)
+            return q.qes(u -> f(-u + T(b)); kwargs...)
         end
     else
         # integrate over [a, b]
@@ -65,12 +63,9 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
     n = length(bc)
     _atol = atol/n
     _rtol = rtol/n
-    # FIXME: This anonymous function is not necessarily in principle, but
-    #        memory usage increases and execution time gets longer if it is
-    #        omitted. I don't know why.
-    Ih, E = q(x -> f(x), a, b; atol=_atol, rtol=_rtol)
+    Ih, E = q(f, a, b; atol=_atol, rtol=_rtol)
     for i in 2:n
-        dIh, dE = q(x -> f(x), bc[i-1], bc[i]; atol=_atol, rtol=_rtol)
+        dIh, dE = q(f, bc[i-1], bc[i]; atol=_atol, rtol=_rtol)
         Ih += dIh
         E += dE
     end
