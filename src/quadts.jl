@@ -17,7 +17,7 @@ function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/
     @assert maxlevel > 0
     t0 = zero(T)
     tables, origin = generate_tables(QuadTSWeightTable, maxlevel, T(h0))
-    QuadTS{T,maxlevel+1}(T(h0), origin, tables)
+    QuadTS{T,maxlevel}(T(h0), origin, tables)
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
@@ -28,13 +28,13 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     Ih = I*h0
     E = zero(eltype(Ih))
     sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
-    for level in 0:(N-1)
-        I += sum_pairwise(sample, q.tables[level+1])
-        h = h0/2^level
+    for level in 1:N
+        I += sum_pairwise(sample, q.tables[level])
+        h = h0/2^(level - 1)
         prevIh = Ih
         Ih = I*h
         E = norm(prevIh - Ih)
-        !(E > max(norm(Ih)*rtol, atol)) && level > 0 && break
+        !(E > max(norm(Ih)*rtol, atol)) && level > 1 && break
     end
     Ih, E
 end
@@ -43,12 +43,12 @@ end
 function generate_tables(::Type{QuadTSWeightTable}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
     ϕ(t) = tanh(sinh(t)*π/2)
     ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    tables = Vector{QuadTSWeightTable}(undef, maxlevel+1)
-    for level in 0:maxlevel
+    tables = Vector{QuadTSWeightTable}(undef, maxlevel)
+    for level in 1:maxlevel
         table = Tuple{T,T}[]
-        h = h0/2^level
+        h = h0/2^(level - 1)
         k = 1
-        step = level == 0 ? 1 : 2
+        step = level == 1 ? 1 : 2
         while true
             t = k*h
             xk = ϕ(t)
@@ -59,7 +59,7 @@ function generate_tables(::Type{QuadTSWeightTable}, maxlevel::Integer, h0::T) wh
             k += step
         end
         reverse!(table)
-        tables[level+1] = QuadTSWeightTable{T}(table)
+        tables[level] = QuadTSWeightTable{T}(table)
     end
 
     x0 = ϕ(zero(T))
