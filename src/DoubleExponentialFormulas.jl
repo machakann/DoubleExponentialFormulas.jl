@@ -24,7 +24,7 @@ function startindex(f::Function, weights, istart::Integer)
             return i
         end
     end
-    return length(weights)
+    return iend
 end
 
 isnotnan(x) = !isnan(x)
