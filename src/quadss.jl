@@ -52,7 +52,7 @@ julia> I, E = qss(f);
 julia> I ≈ 2π
 true
 
-julia> E ≤ sqrt(eps(I))*norm(I)
+julia> E ≤ sqrt(eps(Float64))*norm(I)
 true
 
 julia> g(x) = [1/(1 + x^2), 2/(1 + x^2)];
@@ -62,7 +62,7 @@ julia> I, E = qss(g);
 julia> I ≈ [π, 2π]
 true
 
-julia> E ≤ sqrt(eps(eltype(I)))*norm(I)
+julia> E ≤ sqrt(eps(Float64))*norm(I)
 true
 ```
 """
