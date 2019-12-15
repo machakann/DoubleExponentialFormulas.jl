@@ -32,7 +32,7 @@ the difference from the true value. However, one can expect that the integral
 value `I` is converged if `E <= max(atol, rtol*norm(I))` is true. Otherwise,
 the obtained `I` would be unreliable; the number of repetitions exceeds the
 `maxlevel` before converged. Optionally, one can divide the integral interval
-[a, b, c...], which returns `∫ f(x)dx in [a, b] + ∫f(x)dx in [b, c[1]] + ⋯`.
+[a, b, c...], which returns `∫f(x)dx in [a, b] + ∫f(x)dx in [b, c[1]] + ⋯`.
 It is worth noting that each endpoint allows discontinuity or singularity.
 
 The integrand `f` can also return any value other than a scalar, as far as
