@@ -2,6 +2,7 @@ using LinearAlgebra: norm
 using Printf: @printf
 
 
+"The table for the exp-sinh quadrature"
 struct QuadESWeightTable{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
     table::Vector{Tuple{T,T}}
 end
@@ -9,6 +10,70 @@ Base.size(wt::QuadESWeightTable) = size(wt.table)
 Base.getindex(wt::QuadESWeightTable, i::Int) = getindex(wt.table, i)
 
 
+"""
+    QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
+
+A callable object to integrate a function over the range [0, ∞] using the
+*exp-sinh quadrature*. It utilizes the change of variables to transform the
+integrand into a form well-suited to the trapezoidal rule.
+
+`QuadES` tries to calculate integral values `maxlevel` times at a maximum;
+the step size of a trapezoid is started from `h0` and is halved in each
+following repetition for finer accuracy. The repetition is terminated when the
+difference from the previous estimation gets smaller than a certain threshold.
+The threshold is determined by the runtime parameters, see below.
+
+The type `T` represents the accuracy of interval. The integrand should accept
+values `x<:T` as its parameter.
+
+---
+
+    I, E = (q::QuadES)(f::Function;
+                       atol::Real=zero(T),
+                       rtol::Real=atol>0 ? zero(T) : sqrt(eps(T)))
+                       where {T<:AbstractFloat}
+
+Numerically integrate `f(x)` over the interval [0, ∞] and return the integral
+value `I` and an estimated error `E`. The `E` is not exactly equal to the
+difference from the true value. However, one can expect that the integral value
+`I` is converged if `E <= max(atol, rtol*norm(I))` is true. Otherwise, the
+obtained `I` would be unreliable; the number of repetitions exceeds the
+`maxlevel` before converged.
+
+The integrand `f` can also return any value other than a scalar, as far as
+[`+`](@ref), [`-`](@ref), multiplication by real values, and [`norm`](@ref),
+are implemented. For example, `Vector` or `Array` of numbers are acceptable
+although, unfortunately, it may not be very performant.
+
+# Examples
+```jldoctest
+julia> using DoubleExponentialFormulas
+
+julia> using LinearAlgebra: norm
+
+julia> qes = QuadES(Float64);
+
+julia> f(x) = 2/(1 + x^2);
+
+julia> I, E = qes(f);
+
+julia> I ≈ π
+true
+
+julia> E ≤ sqrt(eps(I))*norm(I)
+true
+
+julia> g(x) = [1/(1 + x^2), 2/(1 + x^2)];
+
+julia> I, E = qes(g);
+
+julia> I ≈ [π/2, π]
+true
+
+julia> E ≤ sqrt(eps(eltype(I)))*norm(I)
+true
+```
+"""
 struct QuadES{T<:AbstractFloat,N}
     h0::T
     origin::Tuple{T,T}

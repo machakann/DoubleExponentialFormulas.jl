@@ -3,29 +3,10 @@ module DoubleExponentialFormulas
 using LinearAlgebra: norm
 
 export
-    quadde,
-    quadts,
-    quades,
-    quadss,
     QuadTS,
     QuadES,
     QuadSS,
     QuadDE
-
-function generate_tables end
-
-function quadde end
-
-include("quadts.jl")
-function quadts end
-
-include("quades.jl")
-function quades end
-
-include("quadss.jl")
-function quadss end
-
-include("quadde.jl")
 
 
 """
@@ -62,6 +43,19 @@ NOTE: This function doesn't check `istart` and `iend`. Be careful to use.
 """
 sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr)) =
     Base.mapreduce_impl(f, +, itr, istart, iend)
+
+
+"""
+Return coordinates and corresponding weights after conversion using double
+exponentual formulas.
+"""
+function generate_tables end
+
+
+include("quadts.jl")
+include("quades.jl")
+include("quadss.jl")
+include("quadde.jl")
 
 
 end # module
