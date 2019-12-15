@@ -4,7 +4,8 @@ export
     QuadTS,
     QuadES,
     QuadSS,
-    QuadDE
+    QuadDE,
+    quadde
 
 
 """
