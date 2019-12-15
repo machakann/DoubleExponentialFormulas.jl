@@ -33,8 +33,8 @@ obtained `I` would be unreliable; the number of repetitions exceeds the
 `maxlevel` before converged.
 
 The integrand `f` can also return any value other than a scalar, as far as
-[`+`](@ref), [`-`](@ref), multiplication by real values, and [`norm`](@ref),
-are implemented. For example, `Vector` or `Array` of numbers are acceptable
+`+`, `-`, multiplication by real values, and `LinearAlgebra.norm`, are
+implemented. For example, `Vector` or `Array` of numbers are acceptable
 although, unfortunately, it may not be very performant.
 
 
@@ -56,9 +56,7 @@ true
 julia> E ≤ sqrt(eps(Float64))*norm(I)
 true
 
-julia> g(x) = [1/(1 + x^2), 2/(1 + x^2)];
-
-julia> I, E = qts(g);
+julia> I, E = qts(x -> [1/(1 + x^2), 2/(1 + x^2)]);
 
 julia> I ≈ [π/2, π]
 true

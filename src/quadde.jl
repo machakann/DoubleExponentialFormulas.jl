@@ -36,8 +36,8 @@ the obtained `I` would be unreliable; the number of repetitions exceeds the
 It is worth noting that each endpoint allows discontinuity or singularity.
 
 The integrand `f` can also return any value other than a scalar, as far as
-[`+`](@ref), [`-`](@ref), multiplication by real values, and [`norm`](@ref),
-are implemented. For example, `Vector` or `Array` of numbers are acceptable
+`+`, `-`, multiplication by real values, and `LinearAlgebra.norm`, are
+implemented. For example, `Vector` or `Array` of numbers are acceptable
 although, unfortunately, it may not be very performant.
 
 
@@ -69,7 +69,7 @@ true
 julia> E ≤ sqrt(eps(Float64))*norm(I)
 true
 
-julia> h(x) = 1/sqrt(abs(1 - x));  # singular point at x = 0
+julia> h(x) = 1/sqrt(abs(x));  # singular point at x = 0
 
 julia> I, E = qde(h, -1, 0, 1);
 
@@ -174,13 +174,9 @@ the obtained `I` would be unreliable; the number of repetitions exceeds the
 It is worth noting that each endpoint allows discontinuity or singularity.
 
 The integrand `f` can also return any value other than a scalar, as far as
-[`+`](@ref), [`-`](@ref), multiplication by real values, and [`norm`](@ref),
-are implemented. For example, `Vector` or `Array` of numbers are acceptable
+`+`, `-`, multiplication by real values, and `LinearAlgebra.norm`, are
+implemented. For example, `Vector` or `Array` of numbers are acceptable
 although, unfortunately, it may not be very performant.
-
-`quadde(...)` is a convenient alias of `QuadDE(Float64)(...)` but using
-pre-calculated `QuadDE` instance. See [`QuadDE`](@ref) for more details.
-
 
 # Examples
 ```jldoctest
@@ -195,22 +191,18 @@ julia> I, E = quadde(f, -1, 1);
 julia> I ≈ π
 true
 
-julia> E ≤ sqrt(eps(I))*norm(I)
+julia> E ≤ sqrt(eps(Float64))*norm(I)
 true
 
-julia> g(x) = [1/(1 + x^2), 2/(1 + x^2)];
-
-julia> I, E = quadde(g, 0, Inf);
+julia> I, E = quadde(x -> [1/(1 + x^2), 2/(1 + x^2)], 0, Inf);
 
 julia> I ≈ [π/2, π]
 true
 
-julia> E ≤ sqrt(eps(eltype(I)))*norm(I)
+julia> E ≤ sqrt(eps(Float64))*norm(I)
 true
 
-julia> h(x) = 1/sqrt(abs(1 - x));  # singular point at x = 0
-
-julia> I, E = quadde(h, -1, 0, 1);
+julia> I, E = quadde(x -> 1/sqrt(abs(x)), -1, 0, 1);  # singular point at x = 0
 
 julia> I ≈ 4
 true
