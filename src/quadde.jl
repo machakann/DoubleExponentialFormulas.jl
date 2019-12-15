@@ -50,10 +50,10 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
         else
             _a = T(a)
             _b = T(b)
-            s = _b + _a
-            t = _b - _a
-            Ih, E = q.qts(u -> f((s + t*u)/2); kwargs...)
-            return Ih*t/2, E*t/2
+            s = (_b + _a)/2
+            t = (_b - _a)/2
+            Ih, E = q.qts(u -> f(s + t*u); kwargs...)
+            return Ih*t, E*t
         end
     end
 end
