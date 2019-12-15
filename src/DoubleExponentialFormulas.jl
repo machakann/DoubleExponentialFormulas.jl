@@ -1,7 +1,5 @@
 module DoubleExponentialFormulas
 
-using LinearAlgebra: norm
-
 export
     QuadTS,
     QuadES,

@@ -2,14 +2,6 @@ using LinearAlgebra: norm
 using Printf: @printf
 
 
-"The table for the tanh-sinh quadrature"
-struct QuadTSWeightTable{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
-    table::Vector{Tuple{T,T}}
-end
-Base.size(wt::QuadTSWeightTable) = size(wt.table)
-Base.getindex(wt::QuadTSWeightTable, i::Int) = getindex(wt.table, i)
-
-
 """
     QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
 
@@ -78,12 +70,12 @@ true
 struct QuadTS{T<:AbstractFloat,N}
     h0::T
     origin::Tuple{T,T}
-    tables::NTuple{N,QuadTSWeightTable{T}}
+    tables::NTuple{N,Vector{Tuple{T,T}}}
 end
 function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
     @assert maxlevel > 0
     t0 = zero(T)
-    tables, origin = generate_tables(QuadTSWeightTable, maxlevel, T(h0))
+    tables, origin = generate_tables(QuadTS, maxlevel, T(h0))
     return QuadTS{T,maxlevel}(T(h0), origin, tables)
 end
 
@@ -112,10 +104,10 @@ function Base.show(io::IO, ::MIME"text/plain", q::QuadTS{T,N}) where {T<:Abstrac
 end
 
 
-function generate_tables(::Type{QuadTSWeightTable}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
+function generate_tables(::Type{QuadTS}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
     ϕ(t) = tanh(sinh(t)*π/2)
     ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    tables = Vector{QuadTSWeightTable}(undef, maxlevel)
+    tables = Vector{Tuple{T,T}}[]
     for level in 1:maxlevel
         table = Tuple{T,T}[]
         h = h0/2^(level - 1)
@@ -131,7 +123,7 @@ function generate_tables(::Type{QuadTSWeightTable}, maxlevel::Integer, h0::T) wh
             k += step
         end
         reverse!(table)
-        tables[level] = QuadTSWeightTable{T}(table)
+        push!(tables, table)
     end
 
     x0 = ϕ(zero(T))

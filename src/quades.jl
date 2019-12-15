@@ -2,14 +2,6 @@ using LinearAlgebra: norm
 using Printf: @printf
 
 
-"The table for the exp-sinh quadrature"
-struct QuadESWeightTable{T<:AbstractFloat} <: AbstractVector{Tuple{T,T}}
-    table::Vector{Tuple{T,T}}
-end
-Base.size(wt::QuadESWeightTable) = size(wt.table)
-Base.getindex(wt::QuadESWeightTable, i::Int) = getindex(wt.table, i)
-
-
 """
     QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
 
@@ -77,13 +69,13 @@ true
 struct QuadES{T<:AbstractFloat,N}
     h0::T
     origin::Tuple{T,T}
-    tables⁺::NTuple{N,QuadESWeightTable{T}}
-    tables⁻::NTuple{N,QuadESWeightTable{T}}
+    tables⁺::NTuple{N,Vector{Tuple{T,T}}}
+    tables⁻::NTuple{N,Vector{Tuple{T,T}}}
 end
 function QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
     @assert maxlevel > 0
     t0 = zero(T)
-    tables⁺, tables⁻, origin = generate_tables(QuadESWeightTable, maxlevel, T(h0))
+    tables⁺, tables⁻, origin = generate_tables(QuadES, maxlevel, T(h0))
     return QuadES{T,maxlevel}(T(h0), origin, tables⁺, tables⁻)
 end
 
@@ -117,11 +109,11 @@ function Base.show(io::IO, ::MIME"text/plain", q::QuadES{T,N}) where {T<:Abstrac
 end
 
 
-function generate_tables(::Type{QuadESWeightTable}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
+function generate_tables(::Type{QuadES}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
     ϕ(t) = exp(sinh(t)*π/2)
     ϕ′(t) = (cosh(t)*π/2)*exp(sinh(t)*π/2)
-    tables⁺ = Vector{QuadESWeightTable}(undef, maxlevel)
-    tables⁻ = Vector{QuadESWeightTable}(undef, maxlevel)
+    tables⁺ = Vector{Tuple{T,T}}[]
+    tables⁻ = Vector{Tuple{T,T}}[]
     for level in 1:maxlevel
         h = h0/2^(level - 1)
         k = 1
@@ -152,8 +144,8 @@ function generate_tables(::Type{QuadESWeightTable}, maxlevel::Integer, h0::T) wh
 
         reverse!(table⁺)
         reverse!(table⁻)
-        tables⁺[level] = QuadESWeightTable{T}(table⁺)
-        tables⁻[level] = QuadESWeightTable{T}(table⁻)
+        push!(tables⁺, table⁺)
+        push!(tables⁻, table⁻)
     end
 
     x0 = ϕ(zero(T))
