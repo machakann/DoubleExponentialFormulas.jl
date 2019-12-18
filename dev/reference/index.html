@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Reference · DoubleExponentialFormulas.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>DoubleExponentialFormulas.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li class="current"><a class="toctext" href>Reference</a><ul class="internal"><li><a class="toctext" href="#Index-1">Index</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Reference</a></li></ul><a class="edit-page" href="https://github.com/machakann/DoubleExponentialFormulas.jl/blob/master/docs/src/reference.md#L"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Reference</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Reference-1" href="#Reference-1">Reference</a></h1><h2><a class="nav-anchor" id="Index-1" href="#Index-1">Index</a></h2><ul><li><a href="#DoubleExponentialFormulas.quadde-Tuple{Function,Real,Real,Vararg{Real,N} where N}"><code>DoubleExponentialFormulas.quadde</code></a></li><li><a href="#DoubleExponentialFormulas.QuadDE"><code>DoubleExponentialFormulas.QuadDE</code></a></li><li><a href="#DoubleExponentialFormulas.QuadES"><code>DoubleExponentialFormulas.QuadES</code></a></li><li><a href="#DoubleExponentialFormulas.QuadSS"><code>DoubleExponentialFormulas.QuadSS</code></a></li><li><a href="#DoubleExponentialFormulas.QuadTS"><code>DoubleExponentialFormulas.QuadTS</code></a></li></ul><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="DoubleExponentialFormulas.quadde-Tuple{Function,Real,Real,Vararg{Real,N} where N}" href="#DoubleExponentialFormulas.quadde-Tuple{Function,Real,Real,Vararg{Real,N} where N}"><code>DoubleExponentialFormulas.quadde</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">I, E = quadde(f::Function, a::Real, b::Real, c::Real...;
+              atol::Real=zero(Float64),
+              rtol::Real=atol&gt;0 ? zero(Float64) : sqrt(eps(Float64)))</code></pre><p>Numerically integrate <code>f(x)</code> over an arbitrary interval [a, b] and return the integral value <code>I</code> and an estimated error <code>E</code>. The <code>E</code> is not exactly equal to the difference from the true value. However, one can expect that the integral value <code>I</code> is converged if <code>E &lt;= max(atol, rtol*norm(I))</code> is true. Otherwise, the obtained <code>I</code> would be unreliable; the number of repetitions exceeds the <code>maxlevel</code> before converged. Optionally, one can divide the integral interval [a, b, c...], which returns <code>∫ f(x)dx in [a, b] + ∫f(x)dx in [b, c[1]] + ⋯</code>. It is worth noting that each endpoint allows discontinuity or singularity.</p><p>The integrand <code>f</code> can also return any value other than a scalar, as far as <code>+</code>, <code>-</code>, multiplication by real values, and <code>LinearAlgebra.norm</code>, are implemented. For example, <code>Vector</code> or <code>Array</code> of numbers are acceptable although, unfortunately, it may not be very performant.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; using DoubleExponentialFormulas
+
+julia&gt; using LinearAlgebra: norm
+
+julia&gt; f(x) = 2/(1 + x^2);
+
+julia&gt; I, E = quadde(f, -1, 1);
+
+julia&gt; I ≈ π
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; I, E = quadde(x -&gt; [1/(1 + x^2), 2/(1 + x^2)], 0, Inf);
+
+julia&gt; I ≈ [π/2, π]
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; I, E = quadde(x -&gt; 1/sqrt(abs(x)), -1, 0, 1);  # singular point at x = 0
+
+julia&gt; I ≈ 4
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/machakann/DoubleExponentialFormulas.jl/blob/9f4c612f5fcdbc0d8b4ac41d75325dc9b36bb259/src/quadde.jl#LL163-L214">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="DoubleExponentialFormulas.QuadDE" href="#DoubleExponentialFormulas.QuadDE"><code>DoubleExponentialFormulas.QuadDE</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-julia">QuadDE(T::Type{&lt;:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)</code></pre><p>A callable object to integrate an function over an arbitrary interval, which uses the <em>double exponential formula</em>s also known as the <em>tanh-sinh quadrature</em> and its variants. It utilizes the change of variables to transform the integrand into a form well-suited to the trapezoidal rule.</p><p><code>QuadDE</code> tries to calculate integral values <code>maxlevel</code> times at a maximum; the step size of a trapezoid is started from <code>h0</code> and is halved in each following repetition for finer accuracy. The repetition is terminated when the difference from the previous estimation gets smaller than a certain threshold. The threshold is determined by the runtime parameters, see below.</p><p>The type <code>T</code> represents the accuracy of interval. The integrand should accept values <code>x&lt;:T</code> as its parameter.</p><hr/><pre><code class="language-none">I, E = (q::QuadDE{T})(f::Function, a::Real, b::Real, c::Real...;
+                      atol::Real=zero(T),
+                      rtol::Real=atol&gt;0 ? zero(T) : sqrt(eps(T)))
+                      where {T&lt;:AbstractFloat}</code></pre><p>Numerically integrate <code>f(x)</code> over an arbitrary interval [a, b] and return the integral value <code>I</code> and an estimated error <code>E</code>. The <code>E</code> is not exactly equal to the difference from the true value. However, one can expect that the integral value <code>I</code> is converged if <code>E &lt;= max(atol, rtol*norm(I))</code> is true. Otherwise, the obtained <code>I</code> would be unreliable; the number of repetitions exceeds the <code>maxlevel</code> before converged. Optionally, one can divide the integral interval [a, b, c...], which returns <code>∫f(x)dx in [a, b] + ∫f(x)dx in [b, c[1]] + ⋯</code>. It is worth noting that each endpoint allows discontinuity or singularity.</p><p>The integrand <code>f</code> can also return any value other than a scalar, as far as <code>+</code>, <code>-</code>, multiplication by real values, and <code>LinearAlgebra.norm</code>, are implemented. For example, <code>Vector</code> or <code>Array</code> of numbers are acceptable although, unfortunately, it may not be very performant.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; using DoubleExponentialFormulas
+
+julia&gt; using LinearAlgebra: norm
+
+julia&gt; qde = QuadDE(Float64);
+
+julia&gt; f(x) = 2/(1 + x^2);
+
+julia&gt; I, E = qde(f, -1, 1);
+
+julia&gt; I ≈ π
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; g(x) = [1/(1 + x^2), 2/(1 + x^2)];
+
+julia&gt; I, E = qde(g, 0, Inf);
+
+julia&gt; I ≈ [π/2, π]
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; h(x) = 1/sqrt(abs(x));  # singular point at x = 0
+
+julia&gt; I, E = qde(h, -1, 0, 1);
+
+julia&gt; I ≈ 4
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/machakann/DoubleExponentialFormulas.jl/blob/9f4c612f5fcdbc0d8b4ac41d75325dc9b36bb259/src/quadde.jl#LL5-L82">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="DoubleExponentialFormulas.QuadES" href="#DoubleExponentialFormulas.QuadES"><code>DoubleExponentialFormulas.QuadES</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-julia">QuadES(T::Type{&lt;:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)</code></pre><p>A callable object to integrate a function over the range [0, ∞) using the <em>exp-sinh quadrature</em>. It utilizes the change of variables to transform the integrand into a form well-suited to the trapezoidal rule.</p><p><code>QuadES</code> tries to calculate integral values <code>maxlevel</code> times at a maximum; the step size of a trapezoid is started from <code>h0</code> and is halved in each following repetition for finer accuracy. The repetition is terminated when the difference from the previous estimation gets smaller than a certain threshold. The threshold is determined by the runtime parameters, see below.</p><p>The type <code>T</code> represents the accuracy of interval. The integrand should accept values <code>x&lt;:T</code> as its parameter.</p><hr/><pre><code class="language-none">I, E = (q::QuadES)(f::Function;
+                   atol::Real=zero(T),
+                   rtol::Real=atol&gt;0 ? zero(T) : sqrt(eps(T)))
+                   where {T&lt;:AbstractFloat}</code></pre><p>Numerically integrate <code>f(x)</code> over the interval [0, ∞) and return the integral value <code>I</code> and an estimated error <code>E</code>. The <code>E</code> is not exactly equal to the difference from the true value. However, one can expect that the integral value <code>I</code> is converged if <code>E &lt;= max(atol, rtol*norm(I))</code> is true. Otherwise, the obtained <code>I</code> would be unreliable; the number of repetitions exceeds the <code>maxlevel</code> before converged.</p><p>The integrand <code>f</code> can also return any value other than a scalar, as far as <code>+</code>, <code>-</code>, multiplication by real values, and <code>LinearAlgebra.norm</code>, are implemented. For example, <code>Vector</code> or <code>Array</code> of numbers are acceptable although, unfortunately, it may not be very performant.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; using DoubleExponentialFormulas
+
+julia&gt; using LinearAlgebra: norm
+
+julia&gt; qes = QuadES(Float64);
+
+julia&gt; f(x) = 2/(1 + x^2);
+
+julia&gt; I, E = qes(f);
+
+julia&gt; I ≈ π
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; I, E = qes(x -&gt; [1/(1 + x^2), 2/(1 + x^2)]);
+
+julia&gt; I ≈ [π/2, π]
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/machakann/DoubleExponentialFormulas.jl/blob/9f4c612f5fcdbc0d8b4ac41d75325dc9b36bb259/src/quades.jl#LL5-L66">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="DoubleExponentialFormulas.QuadSS" href="#DoubleExponentialFormulas.QuadSS"><code>DoubleExponentialFormulas.QuadSS</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-julia">QuadSS(T::Type{&lt;:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)</code></pre><p>A callable object to integrate a function over the range (-∞, ∞) using the <em>sinh-sinh quadrature</em>. It utilizes the change of variables to transform the integrand into a form well-suited to the trapezoidal rule.</p><p><code>QuadSS</code> tries to calculate integral values <code>maxlevel</code> times at a maximum; the step size of a trapezoid is started from <code>h0</code> and is halved in each following repetition for finer accuracy. The repetition is terminated when the difference from the previous estimation gets smaller than a certain threshold. The threshold is determined by the runtime parameters, see below.</p><p>The type <code>T</code> represents the accuracy of interval. The integrand should accept values <code>x&lt;:T</code> as its parameter.</p><hr/><pre><code class="language-none">I, E = (q::QuadSS)(f::Function;
+                   atol::Real=zero(T),
+                   rtol::Real=atol&gt;0 ? zero(T) : sqrt(eps(T)))
+                   where {T&lt;:AbstractFloat}</code></pre><p>Numerically integrate <code>f(x)</code> over the interval (-∞, ∞) and return the integral value <code>I</code> and an estimated error <code>E</code>. The <code>E</code> is not exactly equal to the difference from the true value. However, one can expect that the integral value <code>I</code> is converged if <code>E &lt;= max(atol, rtol*norm(I))</code> is true. Otherwise, the obtained <code>I</code> would be unreliable; the number of repetitions exceeds the <code>maxlevel</code> before converged.</p><p>The integrand <code>f</code> can also return any value other than a scalar, as far as <code>+</code>, <code>-</code>, multiplication by real values, and <code>LinearAlgebra.norm</code>, are implemented. For example, <code>Vector</code> or <code>Array</code> of numbers are acceptable although, unfortunately, it may not be very performant.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; using DoubleExponentialFormulas
+
+julia&gt; using LinearAlgebra: norm
+
+julia&gt; qss = QuadSS(Float64);
+
+julia&gt; f(x) = 2/(1 + x^2);
+
+julia&gt; I, E = qss(f);
+
+julia&gt; I ≈ 2π
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; I, E = qss(x -&gt; [1/(1 + x^2), 2/(1 + x^2)]);
+
+julia&gt; I ≈ [π, 2π]
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/machakann/DoubleExponentialFormulas.jl/blob/9f4c612f5fcdbc0d8b4ac41d75325dc9b36bb259/src/quadss.jl#LL5-L66">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="DoubleExponentialFormulas.QuadTS" href="#DoubleExponentialFormulas.QuadTS"><code>DoubleExponentialFormulas.QuadTS</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-julia">QuadTS(T::Type{&lt;:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)</code></pre><p>A callable object to integrate a function over the range [-1, 1] using the <em>tanh-sinh quadrature</em>. It utilizes the change of variables to transform the integrand into a form well-suited to the trapezoidal rule.</p><p><code>QuadTS</code> tries to calculate integral values <code>maxlevel</code> times at a maximum; the step size of a trapezoid is started from <code>h0</code> and is halved in each following repetition for finer accuracy. The repetition is terminated when the difference from the previous estimation gets smaller than a certain threshold. The threshold is determined by the runtime parameters, see below.</p><p>The type <code>T</code> represents the accuracy of interval. The integrand should accept values <code>x&lt;:T</code> as its parameter.</p><hr/><pre><code class="language-none">I, E = (q::QuadTS)(f::Function;
+                   atol::Real=zero(T),
+                   rtol::Real=atol&gt;0 ? zero(T) : sqrt(eps(T)))
+                   where {T&lt;:AbstractFloat}</code></pre><p>Numerically integrate <code>f(x)</code> over the interval [-1, 1] and return the integral value <code>I</code> and an estimated error <code>E</code>. The <code>E</code> is not exactly equal to the difference from the true value. However, one can expect that the integral value <code>I</code> is converged if <code>E &lt;= max(atol, rtol*norm(I))</code> is true. Otherwise, the obtained <code>I</code> would be unreliable; the number of repetitions exceeds the <code>maxlevel</code> before converged.</p><p>The integrand <code>f</code> can also return any value other than a scalar, as far as <code>+</code>, <code>-</code>, multiplication by real values, and <code>LinearAlgebra.norm</code>, are implemented. For example, <code>Vector</code> or <code>Array</code> of numbers are acceptable although, unfortunately, it may not be very performant.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; using DoubleExponentialFormulas
+
+julia&gt; using LinearAlgebra: norm
+
+julia&gt; qts = QuadTS(Float64);
+
+julia&gt; f(x) = 2/(1 + x^2);
+
+julia&gt; I, E = qts(f);
+
+julia&gt; I ≈ π
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true
+
+julia&gt; I, E = qts(x -&gt; [1/(1 + x^2), 2/(1 + x^2)]);
+
+julia&gt; I ≈ [π/2, π]
+true
+
+julia&gt; E ≤ sqrt(eps(Float64))*norm(I)
+true</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/machakann/DoubleExponentialFormulas.jl/blob/9f4c612f5fcdbc0d8b4ac41d75325dc9b36bb259/src/quadts.jl#LL5-L67">source</a></section><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Home</span></a></footer></article></body></html>
