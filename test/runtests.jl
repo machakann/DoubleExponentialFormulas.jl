@@ -19,6 +19,10 @@ end
 # NOTE: If one wants to know how to use, the only files they should check are
 #       the below items.
 @testset "QuadDE" begin
+    @testset "quadde DEMO" begin
+        include("quadde/Mori.jl")
+    end
+
     @testset "Varius intervals" begin
         include("quadde/intervals.jl")
     end
