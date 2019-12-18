@@ -10,12 +10,6 @@ matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
-notifications:
-  email: false
-after_success:
-  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
-jobs:
   include:
     - stage: Documentation
       julia: 1.0
@@ -25,3 +19,8 @@ jobs:
           Pkg.instantiate();
           include("docs/make.jl");'
       after_success: skip
+notifications:
+  email: false
+after_success:
+  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
