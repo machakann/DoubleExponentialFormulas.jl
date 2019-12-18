@@ -94,9 +94,10 @@ function QuadDE(T::Type{<:AbstractFloat}; maxlevel::Integer=10, kwargs...)
 end
 
 function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
-                          kwargs...) where {T<:AbstractFloat,N}
+                          atol::Real=zero(T),
+                          rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     if a > b
-        I, E = q(f, b, a; kwargs...)
+        I, E = q(f, b, a; atol=atol, rtol=rtol)
         return -I, E
     end
 
@@ -106,31 +107,31 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
 
     if a == -Inf && b == Inf
         # integrate over [-∞, ∞]
-        return q.qss(f; kwargs...)
+        return q.qss(f; atol=atol, rtol=rtol)
     elseif b == Inf
         # integrate over [a, ∞]
         if a == 0
-            return q.qes(f; kwargs...)
+            return q.qes(f; atol=atol, rtol=rtol)
         else
-            return q.qes(u -> f(u + T(a)); kwargs...)
+            return q.qes(u -> f(u + T(a)); atol=atol, rtol=rtol)
         end
     elseif a == -Inf
         # integrate over [-∞, b]
         if b == 0
-            return q.qes(u -> f(-u); kwargs...)
+            return q.qes(u -> f(-u); atol=atol, rtol=rtol)
         else
-            return q.qes(u -> f(-u + T(b)); kwargs...)
+            return q.qes(u -> f(-u + T(b)); atol=atol, rtol=rtol)
         end
     else
         # integrate over [a, b]
         if a == -1 && b == 1
-            return q.qts(f; kwargs...)
+            return q.qts(f; atol=atol, rtol=rtol)
         else
             _a = T(a)
             _b = T(b)
             s = (_b + _a)/2
             t = (_b - _a)/2
-            Ih, E = q.qts(u -> f(s + t*u); kwargs...)
+            Ih, E = q.qts(u -> f(s + t*u); atol=atol/t, rtol=rtol)
             return Ih*t, E*t
         end
     end
