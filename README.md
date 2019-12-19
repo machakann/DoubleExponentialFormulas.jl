@@ -43,7 +43,7 @@ add https://github.com/machakann/DoubleExponentialFormulas.jl.git
                   rtol::Real=atol>0 ? zero(Float64) : sqrt(eps(Float64)))
 ```
 
-The `quadde` function provides a handy way to integrate a function `f(x)` in an arbitrary interval.
+The `quadde` function provides a handy way to integrate a function `f(x)` over an arbitrary interval.
 
 ```julia
 using DoubleExponentialFormulas
@@ -58,7 +58,7 @@ E ≤ sqrt(eps(I))*norm(I)  # true
 
 The above example computes `∫ 1/(1+x^2) dx in [-1, 1]`. The `I` is the obtained integral value and the `E` is an estimated numerical error. The `E` is not exactly equal to the difference from the true value. However, one can expect that the integral value `I` is converged if `E <= max(atol, rtol*norm(I))` is true. Otherwise, the obtained `I` would be unreliable; the number of repetitions exceeds the `maxlevel` before converged.
 
-Half-infinite intervals and the infinite interval are also valid, as far as the integral is converging.
+Half-infinite intervals and the infinite interval are also valid, as far as the integral is convergent.
 
 ```julia
 # Computes ∫ 1/(1+x^2) dx in [0, ∞)
@@ -82,7 +82,7 @@ I ≈ 4    # true
 
 ### Optimized numerical integrators
 
-User can get an optimized integrators, for example, for better accuracy, `QuadDE` will provides the functionality.
+User can get an optimized integrators, for example, for better accuracy; `QuadDE` will provides the functionality.
 
 ```
 qde = QuadDE(BigFloat; h0=one(BigFloat)/8, maxlevel=10)
@@ -91,7 +91,7 @@ qde(x -> 2/(1 + x^2), -1,  1)
 
 User can specify the required precision as a type (`T<:AbstractFloat`), the starting step size `h0` and the maximum number of repetition `maxlevel`. The `h0` and `maxlevel` shown above are the default values, so it can be omitted. `QuadDE` instance is an callable object which has the same interface of `quadde`, actually `quadde` is an alias to `QuadDE(Float64)(...)` with a precalculated instance.
 
-`QuadTS` tries to calculate integral values `maxlevel` times at a maximum; the step size of a trapezoid is started from `h0` and is halved in each following repetition for finer accuracy. The repetition is terminated when the difference from the previous estimation gets smaller than a certain threshold.  The threshold is determined by the runtime parameters, `atol` or `rtol`.
+`QuadDE` tries to calculate integral values `maxlevel` times at a maximum; the step size of a trapezoid is started from `h0` and is halved in each following repetition for finer accuracy. The repetition is terminated when the difference from the previous estimation gets smaller than a certain threshold.  The threshold is determined by the runtime parameters, `atol` or `rtol`.
 
 Using smaller `h0` may help if the integrand `f(x)` includes fine structure, such as spikes, in the integral interval. However, it seems that the subdivision of the interval would be more effective in many cases. Try subdivision first, and then think of an optimized integrator.
 
