@@ -14,12 +14,12 @@ let
     I, E = quades32(f)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quades64(f)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quadesBF(f, rtol=rtol)
@@ -37,12 +37,12 @@ let
     I, E = quades32(f)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quades64(f)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quadesBF(f, rtol=rtol)
@@ -60,12 +60,12 @@ let
     I, E = quades32(f)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quades64(f)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quadesBF(f, rtol=rtol)
@@ -84,12 +84,12 @@ let
     I, E = quades32(f)
     @test I isa Float32
     @test_broken I ≈ expect
-    @test_skip E ≤ sqrt(eps(I))*norm(I)
+    @test_skip E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quades64(f)
     @test I isa Float64
     @test_broken I ≈ expect
-    @test_skip E ≤ sqrt(eps(I))*norm(I)
+    @test_skip E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     # FIXME: Something wrong. Infinite loop?
     # rtol = 1e-17

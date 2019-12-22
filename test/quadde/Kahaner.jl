@@ -22,12 +22,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -45,33 +45,33 @@ let
     f(x::AbstractFloat) = floor(min(x/3*10, one(x)))
     expect = BigFloat("7.00000000000000000000000000000e-1")
 
+    atol = 1e-3
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
-    @test isapprox(I, expect, rtol=1e-3)
-    @test_skip E ≤ sqrt(eps(I))*norm(I)
+    @test abs(I - expect) ≤ atol
+    @test E ≤ atol
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
-    @test isapprox(I, expect, rtol=1e-4)
-    @test_skip E ≤ sqrt(eps(I))*norm(I)
+    @test abs(I - expect) ≤ atol
+    @test E ≤ atol
 
-    rtol = 1e-30
-    I, E = quaddeBF(f, 0, 1, rtol=rtol)
+    I, E = quaddeBF(f, 0, 1, atol=atol)
     @test I isa BigFloat
-    @test isapprox(I, expect, rtol=1e-4)
-    @test_skip E ≤ rtol*norm(I)
+    @test abs(I - expect) ≤ atol
+    @test E ≤ atol
 
     # In practical use, user may not know what actually f is.
     # However, if you know it then splitting the integral interval may help.
     I, E = quadde32(f, 0, 0.3, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 0.3, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-18
     I, E = quaddeBF(f, 0, 0.3, 1, rtol=rtol)
@@ -89,12 +89,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -112,12 +112,12 @@ let
     I, E = quadde32(f, -1, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, -1, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, -1, 1, rtol=rtol)
@@ -136,12 +136,12 @@ let
     I, E = quadde32(f, -1, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, -1, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, -1, 1, rtol=rtol)
@@ -159,12 +159,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -183,12 +183,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -206,12 +206,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -229,12 +229,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -252,12 +252,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -275,12 +275,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -299,12 +299,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -322,11 +322,11 @@ let
 
     I, E = quadde32(f, 0.1, 1)
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0.1, 1)
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-18
     I, E = quaddeBF(f, 0.1, 1, rtol=rtol)
@@ -345,12 +345,12 @@ let
     I, E = quadde32(f, 0, 0.5, 10)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 0.5, 10)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-10
     I, E = quaddeBF(f, 0, 0.5, 10, rtol=rtol)
@@ -370,12 +370,12 @@ let
     I, E = quadde32(f, 0, 1, 10)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1, 10)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, 10, rtol=rtol)
@@ -394,12 +394,12 @@ let
     I, E = quadde32(f, 0, 10)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 10)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 10, rtol=rtol)
@@ -418,12 +418,12 @@ let
     I, E = quadde32(f, 0.01, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0.01, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     # NOTE: the accuracy is not improved so much?
     rtol = 1e-16
@@ -444,12 +444,12 @@ let
     I, E = quadde32(f, 0, π)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, π)
     @test I isa Float64
     @test_broken I ≈ expect
-    @test_skip E ≤ sqrt(eps(I))*norm(I)
+    @test_skip E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-11
     I, E = quaddeBF(f, 0, π, rtol=rtol)
@@ -467,12 +467,12 @@ let
     I, E = quadde32(f, 0, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, 0, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, 0, 1, rtol=rtol)
@@ -491,12 +491,12 @@ let
     I, E = quadde32(f, -1, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     I, E = quadde64(f, -1, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
     I, E = quaddeBF(f, -1, 1, rtol=rtol)
@@ -513,19 +513,19 @@ let
     f(x::AbstractFloat) = 1/cosh((10x-2))^2+1/cosh((100x-40))^4+1/cosh((1000x-600))^6
     expect = BigFloat("0.2108027355005492773756")
 
-    I, E = quadde32(f, 0, 0.3, 0.5, 1, rtol=1e-6)
+    I, E = quadde32(f, 0, 0.4, 0.6, 1)
     @test I isa Float32
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
-    I, E = quadde64(f, 0, 0.3, 0.5, 1)
+    I, E = quadde64(f, 0, 0.4, 0.6, 1)
     @test I isa Float64
     @test I ≈ expect
-    @test E ≤ sqrt(eps(I))*norm(I)
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
-    rtol = 1e-21
-    I, E = quaddeBF(f, 0, 0.3, 0.5, 1, rtol=rtol)
+    atol = 1e-22
+    I, E = quaddeBF(f, 0, 0.4, 0.6, 1, atol=atol)
     @test I isa BigFloat
-    @test isapprox(I, expect, rtol=10rtol*3)
-    @test E ≤ rtol*norm(I)
+    @test isapprox(I, expect, atol=atol)
+    @test E ≤ atol
 end

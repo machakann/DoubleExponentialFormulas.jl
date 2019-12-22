@@ -7,9 +7,9 @@ let
     f(x) = 1/((2 - x)*(1 - x)^(1/4)*(1 + x)^(3/4))
     expect = 1.9490
 
-    I, E = quadde(f, -1, 0, 1)
+    I, E = quadde(f, -1, 0, 1, atol=1e-4)
     @test eltype(I) == Float64
     @test abs(I - expect) ≤ 1e-4
-    @test E ≤ sqrt(eps(eltype(I)))*norm(I)
+    @test E ≤ 1e-4
 end
 

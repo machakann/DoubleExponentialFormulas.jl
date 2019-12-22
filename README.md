@@ -52,8 +52,8 @@ using LinearAlgebra: norm
 f(x) = 1/(1 + x^2)
 I, E = quadde(f, -1, 1)
 
-I ≈ π/2                   # true
-E ≤ sqrt(eps(I))*norm(I)  # true
+I ≈ π/2    # true
+E ≤ sqrt(eps(Float64))*norm(I)  # true
 ```
 
 The above example computes `∫ 1/(1+x^2) dx in [-1, 1]`. The `I` is the obtained integral value and the `E` is an estimated numerical error. The `E` is not exactly equal to the difference from the true value. However, one can expect that the integral value `I` is converged if `E <= max(atol, rtol*norm(I))` is true. Otherwise, the obtained `I` would be unreliable; the number of repetitions exceeds the `maxlevel` before converged.
