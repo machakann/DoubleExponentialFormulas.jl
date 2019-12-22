@@ -85,7 +85,7 @@ struct QuadDE{T<:AbstractFloat,N}
     qes::QuadES{T,N}
     qss::QuadSS{T,N}
 end
-function QuadDE(T::Type{<:AbstractFloat}; maxlevel::Integer=10, kwargs...)
+function QuadDE(T::Type{<:AbstractFloat}; maxlevel::Integer=12, kwargs...)
     @assert maxlevel > 0
     qts = QuadTS(T; maxlevel=maxlevel, kwargs...)
     qes = QuadES(T; maxlevel=maxlevel, kwargs...)
