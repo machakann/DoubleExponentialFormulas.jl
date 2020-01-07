@@ -189,18 +189,18 @@ let
     @test E ≤ rtol*norm(I)
 
     # Split into multiple integral intevals
-    I, E = quadde32(f, -Inf, 1, 0)
+    I, E = quadde32(f, -Inf, -1, 0)
     @test I isa Float32
     @test I ≈ expect
     @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
-    I, E = quadde64(f, -Inf, 1, 0)
+    I, E = quadde64(f, -Inf, -1, 0)
     @test I isa Float64
     @test I ≈ expect
     @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
-    I, E = quaddeBF(f, -Inf, 1, 0, rtol=rtol)
+    I, E = quaddeBF(f, -Inf, -1, 0, rtol=rtol)
     @test I isa BigFloat
     @test isapprox(I, expect, rtol=10rtol)
     @test E ≤ rtol*norm(I)
