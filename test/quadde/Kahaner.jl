@@ -39,30 +39,16 @@ end
 
 # Test problem 2
 # non-smooth function
-# NOTE: Unfortunately, this problem is very difficult for the default QuadDE.
-#       The accuracy is (slowly) depending only on the step size of trapezoidal rule.
 let
     f(x::AbstractFloat) = floor(min(x/3*10, one(x)))
     expect = BigFloat("7.00000000000000000000000000000e-1")
 
-    atol = 1e-3
-    I, E = quadde32(f, 0, 1)
-    @test I isa Float32
-    @test abs(I - expect) ≤ atol
-    @test E ≤ atol
-
-    I, E = quadde64(f, 0, 1)
-    @test I isa Float64
-    @test abs(I - expect) ≤ atol
-    @test E ≤ atol
-
-    I, E = quaddeBF(f, 0, 1, atol=atol)
-    @test I isa BigFloat
-    @test abs(I - expect) ≤ atol
-    @test E ≤ atol
+    # Unfortunately, this problem is very difficult for the default QuadDE.
+    # The accuracy is (slowly) depending only on the step size of trapezoidal rule.
 
     # In practical use, user may not know what actually f is.
-    # However, if you know it then splitting the integral interval may help.
+    # However, if you know where, splitting the integral interval at the
+    # discontinuity may help.
     I, E = quadde32(f, 0, 0.3, 1)
     @test I isa Float32
     @test I ≈ expect
