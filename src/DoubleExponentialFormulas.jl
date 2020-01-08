@@ -44,13 +44,6 @@ sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr)) =
     Base.mapreduce_impl(f, +, itr, istart, iend)
 
 
-"""
-Return coordinates and corresponding weights after conversion using double
-exponentual formulas.
-"""
-function generate_tables end
-
-
 include("quadts.jl")
 include("quades.jl")
 include("quadss.jl")

@@ -68,30 +68,39 @@ true
 struct QuadTS{T<:AbstractFloat,N}
     h0::T
     origin::Tuple{T,T}
+    table0::Vector{Tuple{T,T}}
     tables::NTuple{N,Vector{Tuple{T,T}}}
 end
 function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
     @assert maxlevel > 0
-    t0 = zero(T)
-    tables, origin = generate_tables(QuadTS, maxlevel, T(h0))
-    return QuadTS{T,maxlevel}(T(h0), origin, tables)
+    origin = weight(QuadTS, zero(T))
+    table0 = generate_table(QuadTS, h0, 1)
+    tables = Vector{Tuple{T,T}}[]
+    for level in 1:maxlevel
+        h = h0/2^level
+        table = generate_table(QuadTS, h, 2)
+        push!(tables, table)
+    end
+    return QuadTS{T,maxlevel}(T(h0), origin, table0, Tuple(tables))
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
+    safetyfactor = 20
+    sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     x0, w0 = q.origin
-    I = f(x0)*w0
+    I = f(x0)*w0 + sum_pairwise(sample, q.table0)
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
-    sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     for level in 1:N
-        I += sum_pairwise(sample, q.tables[level])
-        h = h0/2^(level - 1)
+        table = q.tables[level]
+        I += sum_pairwise(sample, table)
+        h = h0/2^level
         prevIh = Ih
         Ih = I*h
-        E = norm(prevIh - Ih)
-        !(E > max(norm(Ih)*rtol, atol)) && level > 1 && break
+        E = norm(prevIh - Ih)^2*safetyfactor
+        !(E > max(norm(Ih)*rtol, atol)) && break
     end
     return Ih, E
 end
@@ -102,30 +111,23 @@ function Base.show(io::IO, ::MIME"text/plain", q::QuadTS{T,N}) where {T<:Abstrac
 end
 
 
-function generate_tables(::Type{QuadTS}, maxlevel::Integer, h0::T) where {T<:AbstractFloat}
+function generate_table(::Type{QuadTS}, h::T, step::Int) where {T<:AbstractFloat}
+    table = Tuple{T,T}[]
+    k = 1
+    while true
+        t = k*h
+        xk, wk = weight(QuadTS, t)
+        1 - xk ≤ eps(T) && break
+        wk ≤ floatmin(T) && break
+        push!(table, (xk, wk))
+        k += step
+    end
+    return table
+end
+
+
+function weight(::Type{QuadTS}, t)
     ϕ(t) = tanh(sinh(t)*π/2)
     ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    tables = Vector{Tuple{T,T}}[]
-    for level in 1:maxlevel
-        table = Tuple{T,T}[]
-        h = h0/2^(level - 1)
-        k = 1
-        step = level == 1 ? 1 : 2
-        while true
-            t = k*h
-            xk = ϕ(t)
-            1 - xk ≤ eps(T) && break
-            wk = ϕ′(t)
-            wk ≤ floatmin(T) && break
-            push!(table, (xk, wk))
-            k += step
-        end
-        reverse!(table)
-        push!(tables, table)
-    end
-
-    x0 = ϕ(zero(T))
-    w0 = ϕ′(zero(T))
-    origin = (x0, w0)
-    return Tuple(tables), origin
+    return ϕ(t), ϕ′(t)
 end
