@@ -142,10 +142,9 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
     bc = (b, c...)
     n = length(bc)
     _atol = atol/n
-    _rtol = rtol/n
-    Ih, E = q(f, a, b; atol=_atol, rtol=_rtol)
+    Ih, E = q(f, a, b; atol=_atol, rtol=rtol)
     for i in 2:n
-        dIh, dE = q(f, bc[i-1], bc[i]; atol=_atol, rtol=_rtol)
+        dIh, dE = q(f, bc[i-1], bc[i]; atol=_atol, rtol=rtol)
         Ih += dIh
         E += dE
     end
