@@ -170,7 +170,7 @@ I ≈ 4    # true
 The type `QuadDE` represents the pre-calculated table of ``x_k`` and ``w_k``. If one needs an optimized table, for example with a smaller step size ``h`` or with a better precision using `BigFloat`, `QuadDE` will provides the functionality.
 
 ```
-qde = QuadDE(BigFloat; h0=one(BigFloat)/8, maxlevel=10)
+qde = QuadDE(BigFloat; h0=one(BigFloat), maxlevel=12)
 qde(x -> 2/(1 + x^2), -1,  1)
 ```
 
