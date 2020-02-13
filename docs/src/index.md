@@ -58,7 +58,7 @@ x(u) = \frac{b + a}{2} + \frac{b - a}{2}u
 The ``x(u)`` changes from ``a`` to ``b`` when ``u`` changes from ``-1`` to ``1``. Hence,
 
 ```math
-\int_{a}^{b} f(x) dx = \int_{-1}^{1} f\left(x(u)\right)(b - a) du = \int_{-\infty}^{\infty} f\left(x\left(u(t)\right)\right)(b - a)w(t) dt.
+\int_{a}^{b} f(x) dx = \frac{b - a}{2} \int_{-1}^{1} f\left(x(u)\right) du = \frac{b - a}{2} \int_{-\infty}^{\infty} f\left(x\left(u(t)\right)\right)w(t) dt.
 ```
 
 
