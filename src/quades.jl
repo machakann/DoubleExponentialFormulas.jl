@@ -90,7 +90,6 @@ end
 
 function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    safetyfactor = 20
     sample(t) = f(t[1])*t[2]
     x0, w0 = q.origin
     I = f(x0)*w0
@@ -109,7 +108,7 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
         h = h0/2^level
         prevIh = Ih
         Ih = I*h
-        E = norm(prevIh - Ih)^2*safetyfactor
+        E = estimate_error(T, prevIh, Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
     end
     return Ih, E

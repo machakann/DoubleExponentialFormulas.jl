@@ -85,7 +85,6 @@ end
 
 function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    safetyfactor = 20
     f⁺ = f
     f⁻ = u -> f(-u)
     sample⁺(t) = f⁺(t[1])*t[2]
@@ -108,7 +107,7 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
         h = h0/2^level
         prevIh = Ih
         Ih = I*h
-        E = norm(prevIh - Ih)^2*safetyfactor
+        E = estimate_error(T, prevIh, Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
     end
     return Ih, E

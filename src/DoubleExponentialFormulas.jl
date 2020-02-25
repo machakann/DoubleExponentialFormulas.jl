@@ -1,5 +1,7 @@
 module DoubleExponentialFormulas
 
+using LinearAlgebra: norm
+
 export
     QuadTS,
     QuadES,
@@ -42,6 +44,37 @@ NOTE: This function doesn't check `istart` and `iend`. Be careful to use.
 """
 sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr)) =
     Base.mapreduce_impl(f, +, itr, istart, iend)
+
+
+"""
+    estimate_error(T::Type{<:AbstractFloat}, prevI, I)
+
+Estimate an error from the true integral(, though it may not be very accurate).
+
+With double exponential formula, the error from the true value `I` decays
+exponentially.
+    ΔI(h) = I - I(h) ≈ exp(-C/h)
+`I(h)` is the numerical integral with a step size `h`, `C` is a
+constant depending on the integrand. If the step size is halved,
+    ΔI(h/2) = I - I(h/2) ≈ exp(-2C/h) ≈ ( ΔI(h) )²,
+the significant digits gets almost twice. Therefore, `I(h/2)` should be
+considerably closer to the true value than `I(h)`.
+    ΔI(h/2) ≈ ( ΔI(h) )² ≈ ( I - I(h) )² ≈ ( I(h/2) - I(h) )²
+Introduce a magnification coefficient `M` for safety.
+    ΔI(h/2) ≈ M*( I(h/2) - I(h) )²
+Furthermore, the floating point numbers generally have a finite
+significant digits; `ΔI(h/2)` would asymptotically get closer to `I*ε`
+at minimum, rather than 0.
+    ΔI(h/2) ≈ M*( I(h/2) - I(h) )² + I*ε
+            ≈ M*( I(h/2) - I(h) )² + I(h/2)*ε
+
+FIXME: The logical ground of the safety factor is very weak. Any better way?
+"""
+function estimate_error(T::Type{<:AbstractFloat}, prevI, I)
+    ε = eps(T)
+    M = 20
+    return M*norm(I - prevI)^2 + norm(I)*ε
+end
 
 
 include("quadts.jl")
