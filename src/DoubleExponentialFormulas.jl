@@ -17,20 +17,23 @@ Returns the first index i which `f(weights[i][1])` is not NaN,
 where `i >= istart`.
 
 This function is employed to avoid sampling `f(x)` with too large `abs(x)` in
-trapezoidal rule.
+trapezoidal rule. For example, the limit of `x*exp(-x^2)` may result in NaN
+when `x` approaches infinity since the expression reduced to be `Inf*0` in
+float point number computations.
 """
 function startindex(f::Function, weights, istart::Integer)
     iend = length(weights)
     for i in istart:iend
         x, _ = @inbounds weights[i]
-        if all(isnotnan.(f(x)))
-            return i
+        y = try
+            f(x)
+        catch
+            continue
         end
+        all(.!isnan.(y)) && return i
     end
     return iend
 end
-
-isnotnan(x) = !isnan(x)
 
 
 """
