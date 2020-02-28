@@ -3,17 +3,18 @@ using Printf: @printf
 
 
 """
-    QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, h0::Real=one(T)/8)
+    QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=10, n0::Integer=3)
 
 A callable object to integrate a function over the range [-1, 1] using the
 *tanh-sinh quadrature*. It utilizes the change of variables to transform the
 integrand into a form well-suited to the trapezoidal rule.
 
 `QuadTS` tries to calculate integral values `maxlevel` times at a maximum;
-the step size of a trapezoid is started from `h0` and is halved in each
-following repetition for finer accuracy. The repetition is terminated when the
-difference from the previous estimation gets smaller than a certain threshold.
-The threshold is determined by the runtime parameters, see below.
+applying the trapezoidal rule with the initial division number `n0` and the
+number is doubled in each following repetition for finer accuracy. The
+repetition is terminated when the difference from the previous estimation gets
+smaller than a certain threshold. The threshold is determined by the runtime
+parameters, see below.
 
 The type `T` represents the accuracy of interval. The integrand should accept
 values `x<:T` as its parameter.
@@ -66,22 +67,28 @@ true
 ```
 """
 struct QuadTS{T<:AbstractFloat,N}
-    h0::T
+    tmax::T
+    n0::Int
     origin::Tuple{T,T}
     table0::Vector{Tuple{T,T}}
     tables::NTuple{N,Vector{Tuple{T,T}}}
 end
-function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
+function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, n0::Integer=3)
     @assert maxlevel > 0
+    @assert n0 > 0
+    tmax = asinh(atanh(1 - 2*eps(one(T)))*2/π)
+    h0 = tmax/n0
     origin = weight(QuadTS, zero(T))
-    table0 = generate_table(QuadTS, h0, 1)
+    table0 = [weight(QuadTS, k*h0) for k in 1:n0]
     tables = Vector{Tuple{T,T}}[]
-    for level in 1:maxlevel
-        h = h0/2^level
-        table = generate_table(QuadTS, h, 2)
+    n = n0
+    for _ in 1:maxlevel
+        n *= 2
+        h = tmax/n
+        table = [weight(QuadTS, k*h) for k in 1:2:n]
         push!(tables, table)
     end
-    return QuadTS{T,maxlevel}(T(h0), origin, table0, Tuple(tables))
+    return QuadTS{T,maxlevel}(tmax, n0, origin, table0, Tuple(tables))
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
@@ -89,14 +96,17 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     x0, w0 = q.origin
     I = f(x0)*w0 + sum_pairwise(sample, q.table0)
-    h0 = q.h0
+    n0 = q.n0
+    tmax = q.tmax
+    h0 = tmax/n0
     Ih = I*h0
     E = zero(eltype(Ih))
-    for level in 1:N
-        table = q.tables[level]
+    n = n0
+    for table in q.tables
         I += sum_pairwise(sample, table)
-        h = h0/2^level
         prevIh = Ih
+        n *= 2
+        h = tmax/n
         Ih = I*h
         E = estimate_error(T, prevIh, Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
@@ -104,24 +114,10 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     return Ih, E
 end
 
+
 function Base.show(io::IO, ::MIME"text/plain", q::QuadTS{T,N}) where {T<:AbstractFloat,N}
-    @printf("DoubleExponentialFormulas.QuadTS{%s}: maxlevel=%d, h0=%.3e",
-            string(T), N, q.h0)
-end
-
-
-function generate_table(::Type{QuadTS}, h::T, step::Int) where {T<:AbstractFloat}
-    table = Tuple{T,T}[]
-    k = 1
-    while true
-        t = k*h
-        xk, wk = weight(QuadTS, t)
-        1 - xk ≤ eps(T) && break
-        wk ≤ floatmin(T) && break
-        push!(table, (xk, wk))
-        k += step
-    end
-    return table
+    @printf("DoubleExponentialFormulas.QuadTS{%s}: maxlevel=%d, n0=%d",
+            string(T), N, q.n0)
 end
 
 

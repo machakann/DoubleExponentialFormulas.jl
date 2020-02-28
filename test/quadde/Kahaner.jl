@@ -323,7 +323,6 @@ end
 
 # Test problem 14
 # Super fast decay around x ~ 0
-# FIXME: split the integral range into parts
 let
     f(x::T) where {T<:AbstractFloat} = 5*sqrt(T(2))*exp(x^2*(-50)*314_159/100_000)
     expect = BigFloat("5.0000021117e-1")
@@ -348,7 +347,6 @@ end
 
 # Test problem 15
 # Super fast decay around x ~ 0
-# FIXME: split the integral range into parts
 let
     f(x::AbstractFloat) = 25*exp(-x*25)
     expect = 1
@@ -377,18 +375,18 @@ let
     f(x::AbstractFloat) = 1/(2500*x^2 + 1)*50/314_159*100_000
     expect = BigFloat("4.99363802871016550828171090341e-1")
 
-    I, E = quadde32(f, 0, 10)
+    I, E = quadde32(f, 0, 1, 10)
     @test I isa Float32
     @test I ≈ expect
     @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
-    I, E = quadde64(f, 0, 10)
+    I, E = quadde64(f, 0, 1, 10)
     @test I isa Float64
     @test I ≈ expect
     @test E ≤ sqrt(eps(typeof(I)))*norm(I)
 
     rtol = 1e-30
-    I, E = quaddeBF(f, 0, 10, rtol=rtol)
+    I, E = quaddeBF(f, 0, 1, 10, rtol=rtol)
     @test I isa BigFloat
     @test isapprox(I, expect, rtol=10rtol)
     @test E ≤ rtol*norm(I)
