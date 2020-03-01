@@ -74,6 +74,7 @@ struct QuadES{T<:AbstractFloat,N}
 end
 function QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
     @assert maxlevel > 0
+    @assert h0 > 0
     origin  = weight(QuadES, zero(T))
     table0⁺ = generate_table⁺(QuadES, h0,  1)
     table0⁻ = generate_table⁻(QuadES, h0, -1)

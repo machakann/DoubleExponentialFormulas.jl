@@ -73,6 +73,7 @@ struct QuadTS{T<:AbstractFloat,N}
 end
 function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
     @assert maxlevel > 0
+    @assert h0 > 0
     origin = weight(QuadTS, zero(T))
     table0 = generate_table(QuadTS, h0, 1)
     tables = Vector{Tuple{T,T}}[]
