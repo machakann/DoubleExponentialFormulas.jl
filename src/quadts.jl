@@ -95,7 +95,7 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     x0, w0 = q.origin
-    I = f(x0)*w0 + sum_pairwise(sample, q.table0)
+    I = f(x0)*w0 + mapsum(sample, q.table0)
     n0 = q.n0
     tmax = q.tmax
     h0 = tmax/n0
@@ -103,7 +103,7 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
     E = zero(eltype(Ih))
     n = n0
     for table in q.tables
-        I += sum_pairwise(sample, table)
+        I += mapsum(sample, table)
         prevIh = Ih
         n *= 2
         h = tmax/n
