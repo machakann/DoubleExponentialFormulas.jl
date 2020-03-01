@@ -36,17 +36,83 @@ function startindex(f::Function, weights, istart::Integer)
 end
 
 
-"""
-    sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr))
+@noinline function mapsum(f, A::AbstractVector, thr::Real,
+                          ifirst::Integer, ilast::Integer, blksize::Int)
+    if ifirst == ilast
+        @inbounds a1 = A[ifirst]
+        return f(a1)
+    elseif ifirst + blksize > ilast
+        # sequential portion
+        if thr == 0
+            return _mapsum_sequential(f, A, ifirst, ilast)
+        else
+            return _mapsum_sequential_edge(f, A, thr, ifirst, ilast)
+        end
+    else
+        # pairwise portion
+        imid = (ifirst + ilast) >> 1
+        v1 = mapsum(f, A, zero(thr), ifirst, imid, blksize)
+        v2 = mapsum(f, A, thr, imid+1, ilast, blksize)
+        return v1 + v2
+    end
+end
 
-Return total summation of items in `itr` from `istart`-th through `iend`-th
- with applying a function `f`. This function uses pairwise summation algorithm
- to reduce numerical error as possible.
+"""
+    mapsum(f, A::AbstractVector, thr::Real,
+           ifirst::Integer=1, ilast::Integer=length(A))
+
+Return the total summation of items in `A` with applying a function `f`.
 
 NOTE: This function doesn't check `istart` and `iend`. Be careful to use.
 """
-sum_pairwise(f::Function, itr, istart::Integer=1, iend::Integer=length(itr)) =
-    Base.mapreduce_impl(f, +, itr, istart, iend)
+mapsum(f, A::AbstractVector, thr::Real, ifirst::Integer=1, ilast::Integer=length(A)) =
+    mapsum(f, A, thr, ifirst, ilast, 512)
+mapsum(f, A::AbstractVector) = mapsum(f, A, 0.0)
+
+function _mapsum_sequential(f, A::AbstractVector, ifirst::Integer, ilast::Integer)
+    @inbounds a1 = A[ifirst]
+    @inbounds a2 = A[ifirst+1]
+    v = f(a1) + f(a2)
+    @simd for i in ifirst + 2 : ilast
+        @inbounds ai = A[i]
+        v = v + f(ai)
+    end
+    return v
+end
+
+function _mapsum_sequential_edge(f, A::AbstractVector, thr::Real,
+                                 ifirst::Integer, ilast::Integer)
+    @inbounds a1 = A[ilast]
+    @inbounds a2 = A[ilast-1]
+    dv1 = f(a1)
+    dv2 = f(a2)
+    normdv1 = norm(dv1)
+    normdv2 = norm(dv2)
+    v = dv1 + dv2
+    initialcount = 3
+    quitcount = initialcount
+    quitcount -=
+    if normdv1 < thr && normdv2 < thr
+        2
+    elseif normdv2 < thr
+        1
+    else
+        0
+    end
+    for i in ilast - 2 : -1 : ifirst
+        @inbounds ai = A[i]
+        dv = f(ai)
+        normdv = norm(dv)
+        v = v + dv
+        if norm(dv) < thr
+            quitcount -= 1
+        else
+            quitcount = 3
+        end
+        quitcount < 1 && break
+    end
+    return v
+end
 
 
 """

@@ -93,22 +93,24 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
     I = f(x0)*w0
     istart⁺ = startindex(f⁺, q.table0, 1)
     istart⁻ = startindex(f⁻, q.table0, 1)
-    I += sum_pairwise(sample⁺, q.table0, istart⁺)
-    I += sum_pairwise(sample⁻, q.table0, istart⁻)
+    I += mapsum(sample⁺, q.table0, zero(T), istart⁺)
+    I += mapsum(sample⁻, q.table0, zero(T), istart⁻)
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
+    tol = max(norm(Ih)*rtol, atol)
     for level in 1:N
         table = q.tables[level]
         istart⁺ = startindex(f⁺, table, 2*istart⁺ - 1)
         istart⁻ = startindex(f⁻, table, 2*istart⁻ - 1)
-        I += sum_pairwise(sample⁺, table, istart⁺)
-        I += sum_pairwise(sample⁻, table, istart⁻)
+        I += mapsum(sample⁺, table, tol, istart⁺)
+        I += mapsum(sample⁻, table, tol, istart⁻)
         h = h0/2^level
         prevIh = Ih
         Ih = I*h
         E = estimate_error(T, prevIh, Ih)
-        !(E > max(norm(Ih)*rtol, atol)) && break
+        tol = max(norm(Ih)*rtol, atol)
+        !(E > tol) && break
     end
     return Ih, E
 end
