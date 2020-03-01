@@ -88,13 +88,13 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     x0, w0 = q.origin
-    I = f(x0)*w0 + sum_pairwise(sample, q.table0)
+    I = f(x0)*w0 + mapsum(sample, q.table0)
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
     for level in 1:N
         table = q.tables[level]
-        I += sum_pairwise(sample, table)
+        I += mapsum(sample, table)
         h = h0/2^level
         prevIh = Ih
         Ih = I*h
@@ -121,6 +121,7 @@ function generate_table(::Type{QuadTS}, h::T, step::Int) where {T<:AbstractFloat
         push!(table, (xk, wk))
         k += step
     end
+    reverse!(table)
     return table
 end
 
