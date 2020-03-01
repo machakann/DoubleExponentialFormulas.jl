@@ -11,6 +11,46 @@ export
 
 
 """
+    search_edge_t(T::Type{<:AbstractFloat}, ϕ::Function, ϕ′::Function)
+
+Return the largest `t` satisfying
+  ϕ(t) != 0 && ϕ(t) != Inf && ϕ′(t) != 0 && ϕ′(t) != Inf.
+"""
+function search_edge_t(T::Type{<:AbstractFloat}, ϕ::Function, ϕ′::Function)
+    isover(t) = iszero(ϕ(t)) || isinf(ϕ(t)) || iszero(ϕ′(t)) || isinf(ϕ′(t))
+    t = zero(T)
+    dt0 = T(8)
+    for _ in 1:1000
+        isover(t + dt0) && break
+        t += dt0
+    end
+    for i in 1:1000
+        dt = dt0/2^i
+        isover(t + dt) && continue
+        t += dt
+    end
+    return t
+end
+
+
+function generate_table(samplepoint, maxlevel::Integer, n0::Int, tmax::T) where {T<:AbstractFloat}
+    h0 = tmax/n0
+    table0 = [samplepoint(k*h0) for k in 1:n0]
+    reverse!(table0)
+    tables = Vector{Tuple{T,T}}[]
+    n = n0
+    for _ in 1:maxlevel
+        n *= 2
+        h = tmax/n
+        table = [samplepoint(k*h) for k in 1:2:n]
+        reverse!(table)
+        push!(tables, table)
+    end
+    return table0, tables
+end
+
+
+"""
     startindex(f::Function, weights, istart::Integer)
 
 Returns the first index i which `f(weights[i][1])` is not NaN,

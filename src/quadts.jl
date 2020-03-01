@@ -67,8 +67,8 @@ true
 ```
 """
 struct QuadTS{T<:AbstractFloat,N}
-    tmax::T
     n0::Int
+    tmax::T
     origin::Tuple{T,T}
     table0::Vector{Tuple{T,T}}
     tables::NTuple{N,Vector{Tuple{T,T}}}
@@ -76,19 +76,13 @@ end
 function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, n0::Integer=3)
     @assert maxlevel > 0
     @assert n0 > 0
+    ϕ(t) = tanh(sinh(t)*π/2)
+    ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
+    samplepoint(t) = (ϕ(t), ϕ′(t))
     tmax = asinh(atanh(1 - 2*eps(one(T)))*2/π)
-    h0 = tmax/n0
-    origin = weight(QuadTS, zero(T))
-    table0 = [weight(QuadTS, k*h0) for k in 1:n0]
-    tables = Vector{Tuple{T,T}}[]
-    n = n0
-    for _ in 1:maxlevel
-        n *= 2
-        h = tmax/n
-        table = [weight(QuadTS, k*h) for k in 1:2:n]
-        push!(tables, table)
-    end
-    return QuadTS{T,maxlevel}(tmax, n0, origin, table0, Tuple(tables))
+    origin = samplepoint(zero(T))
+    table0, tables = generate_table(samplepoint, maxlevel, n0, tmax)
+    return QuadTS{T,maxlevel}(n0, tmax, origin, table0, Tuple(tables))
 end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
@@ -118,11 +112,4 @@ end
 function Base.show(io::IO, ::MIME"text/plain", q::QuadTS{T,N}) where {T<:AbstractFloat,N}
     @printf("DoubleExponentialFormulas.QuadTS{%s}: maxlevel=%d, n0=%d",
             string(T), N, q.n0)
-end
-
-
-function weight(::Type{QuadTS}, t)
-    ϕ(t) = tanh(sinh(t)*π/2)
-    ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    return ϕ(t), ϕ′(t)
 end

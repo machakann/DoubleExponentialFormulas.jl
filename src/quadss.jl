@@ -10,10 +10,11 @@ A callable object to integrate a function over the range (-∞, ∞) using the
 integrand into a form well-suited to the trapezoidal rule.
 
 `QuadSS` tries to calculate integral values `maxlevel` times at a maximum;
-the step size of a trapezoid is started from `h0` and is halved in each
-following repetition for finer accuracy. The repetition is terminated when the
-difference from the previous estimation gets smaller than a certain threshold.
-The threshold is determined by the runtime parameters, see below.
+applying the trapezoidal rule with the initial division number `n0` and the
+number is doubled in each following repetition for finer accuracy. The
+repetition is terminated when the difference from the previous estimation gets
+smaller than a certain threshold. The threshold is determined by the runtime
+parameters, see below.
 
 The type `T` represents the accuracy of interval. The integrand should accept
 values `x<:T` as its parameter.
@@ -65,22 +66,22 @@ true
 ```
 """
 struct QuadSS{T<:AbstractFloat,N}
-    h0::T
+    n0::Int
+    tmax::T
     origin::Tuple{T,T}
     table0::Vector{Tuple{T,T}}
     tables::NTuple{N,Vector{Tuple{T,T}}}
 end
-function QuadSS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
+function QuadSS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, n0::Real=7)
     @assert maxlevel > 0
-    origin = weight(QuadSS, zero(T))
-    table0 = generate_table(QuadSS, h0, 1)
-    tables = Vector{Tuple{T,T}}[]
-    for level in 1:maxlevel
-        h = h0/2^level
-        table = generate_table(QuadSS, h, 2)
-        push!(tables, table)
-    end
-    return QuadSS{T,maxlevel}(T(h0), origin, table0, Tuple(tables))
+    @assert n0 > 0
+    ϕ(t) = sinh(sinh(t)*π/2)
+    ϕ′(t) = (cosh(t)*π/2)*cosh(sinh(t)*π/2)
+    samplepoint(t) = (ϕ(t), ϕ′(t))
+    tmax = search_edge_t(T, ϕ, ϕ′)
+    origin = samplepoint(zero(T))
+    table0, tables = generate_table(samplepoint, maxlevel, n0, tmax)
+    return QuadSS{T,maxlevel}(n0, tmax, origin, table0, Tuple(tables))
 end
 
 function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
@@ -95,17 +96,21 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
     istart⁻ = startindex(f⁻, q.table0, 1)
     I += mapsum(sample⁺, q.table0, istart⁺)
     I += mapsum(sample⁻, q.table0, istart⁻)
-    h0 = q.h0
+    n0 = q.n0
+    tmax = q.tmax
+    h0 = tmax/n0
     Ih = I*h0
     E = zero(eltype(Ih))
+    n = n0
     for level in 1:N
         table = q.tables[level]
         istart⁺ = startindex(f⁺, table, 2*istart⁺ - 1)
         istart⁻ = startindex(f⁻, table, 2*istart⁻ - 1)
         I += mapsum(sample⁺, table, istart⁺)
         I += mapsum(sample⁻, table, istart⁻)
-        h = h0/2^level
         prevIh = Ih
+        n *= 2
+        h = tmax/n
         Ih = I*h
         E = estimate_error(T, prevIh, Ih)
         !(E > max(norm(Ih)*rtol, atol)) && break
@@ -116,27 +121,4 @@ end
 function Base.show(io::IO, ::MIME"text/plain", q::QuadSS{T,N}) where {T<:AbstractFloat,N}
     @printf("DoubleExponentialFormulas.QuadSS{%s}: maxlevel=%d, h0=%.3e",
             string(T), N, q.h0)
-end
-
-
-function generate_table(::Type{QuadSS}, h::T, step::Int) where {T<:AbstractFloat}
-    table = Tuple{T,T}[]
-    k = 1
-    while true
-        t = k*h
-        xk, wk = weight(QuadSS, t)
-        xk ≥ floatmax(T) && break
-        wk ≥ floatmax(T) && break
-        push!(table, (xk, wk))
-        k += step
-    end
-    reverse!(table)
-    return table
-end
-
-
-function weight(::Type{QuadSS}, t)
-    ϕ(t) = sinh(sinh(t)*π/2)
-    ϕ′(t) = (cosh(t)*π/2)*cosh(sinh(t)*π/2)
-    return ϕ(t), ϕ′(t)
 end
