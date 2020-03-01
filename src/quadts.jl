@@ -99,7 +99,8 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
         prevIh = Ih
         Ih = I*h
         E = estimate_error(T, prevIh, Ih)
-        !(E > max(norm(Ih)*rtol, atol)) && break
+        tol = max(norm(Ih)*rtol, atol)
+        !(E > tol) && break
     end
     return Ih, E
 end
