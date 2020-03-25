@@ -182,6 +182,6 @@ Using smaller `h0` may help if the integrand `f(x)` includes fine structure, suc
 
 
 
-[^1]: Takahasi, H.; Mori, M. Double Exponential Formulas for Numerical Integration. Publ. Res. Inst. Math. Sci. 1973, 9 (3), 721–741.  https://doi.org/10.2977/prims/1195192451.
+[^1]: Takahasi, H.; Mori, M. Double Exponential Formulas for Numerical Integration. *Publ. Res. Inst. Math. Sci.* **1973,** *9 (3),* 721–741.  [10.2977/prims/1195192451](https://doi.org/10.2977/prims/1195192451).
 
-[^2]: Mori, M.; Sugihara, M. The Double-Exponential Transformation in Numerical Analysis. J. Comput. Appl. Math. 2001, 127 (1–2), 287–296.  https://doi.org/10.1016/S0377-0427(00)00501-X.
+[^2]: Mori, M.; Sugihara, M. The Double-Exponential Transformation in Numerical Analysis. *J. Comput. Appl. Math.* **2001,** *127 (1–2),* 287–296.  [10.1016/S0377-0427(00)00501-X](https://doi.org/10.1016/S0377-0427(00)00501-X).
