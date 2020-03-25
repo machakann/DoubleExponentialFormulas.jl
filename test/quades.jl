@@ -6,6 +6,16 @@ quades32 = QuadES(Float32)
 quades64 = QuadES(Float64)
 quadesBF = QuadES(BigFloat)
 
+
+# Test Base.show works without error
+let
+    io = IOBuffer()
+    @test (Base.show(io, MIME("text/plain"), quades32); true)
+    @test (Base.show(io, MIME("text/plain"), quades64); true)
+    @test (Base.show(io, MIME("text/plain"), quadesBF); true)
+end
+
+
 # Test [0, ∞] interval (with Exp-Sinh quadrature)
 let
     f(x::AbstractFloat) = exp(-x)

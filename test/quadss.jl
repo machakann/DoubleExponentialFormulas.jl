@@ -6,6 +6,16 @@ quadss32 = QuadSS(Float32)
 quadss64 = QuadSS(Float64)
 quadssBF = QuadSS(BigFloat)
 
+
+# Test Base.show works without error
+let
+    io = IOBuffer()
+    @test (Base.show(io, MIME("text/plain"), quadss32); true)
+    @test (Base.show(io, MIME("text/plain"), quadss64); true)
+    @test (Base.show(io, MIME("text/plain"), quadssBF); true)
+end
+
+
 # Test (-∞, ∞) interval (with Sinh-Sinh quadrature)
 # Gauss integral
 let

@@ -107,7 +107,7 @@ function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
 end
 
 function Base.show(io::IO, ::MIME"text/plain", q::QuadTS{T,N}) where {T<:AbstractFloat,N}
-    @printf("DoubleExponentialFormulas.QuadTS{%s}: maxlevel=%d, h0=%.3e",
+    @printf(io, "DoubleExponentialFormulas.QuadTS{%s}: maxlevel=%d, h0=%.3e",
             string(T), N, q.h0)
 end
 

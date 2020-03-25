@@ -7,6 +7,15 @@ quadts64 = QuadTS(Float64)
 quadtsBF = QuadTS(BigFloat)
 
 
+# Test Base.show works without error
+let
+    io = IOBuffer()
+    @test (Base.show(io, MIME("text/plain"), quadts32); true)
+    @test (Base.show(io, MIME("text/plain"), quadts64); true)
+    @test (Base.show(io, MIME("text/plain"), quadtsBF); true)
+end
+
+
 let
     f(x) = 1
     expect = 2
