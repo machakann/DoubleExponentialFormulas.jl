@@ -1,7 +1,7 @@
 name = "DoubleExponentialFormulas"
 uuid = "eb426421-6452-4132-80ef-4b100a757ac5"
 authors = ["Masaaki Nakamura"]
-version = "0.0.3"
+version = "0.0.4"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
