@@ -110,6 +110,29 @@ let
 end
 
 
+# Test `f(xk)*wk = 0*Inf` case
+let
+    f(x::AbstractFloat) = x*exp(-x^2)
+    expect = 1/BigFloat(2)
+
+    I, E = quades32(f)
+    @test I isa Float32
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
+
+    I, E = quades64(f)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I)))*norm(I)
+
+    rtol = 1e-30
+    I, E = quadesBF(f, rtol=rtol)
+    @test I isa BigFloat
+    @test isapprox(I, expect, rtol=10rtol)
+    @test E ≤ rtol*norm(I)
+end
+
+
 # Test non-scalar output with QuadES
 let
     f(x::AbstractFloat) = [exp(-x), 2exp(-x)]
