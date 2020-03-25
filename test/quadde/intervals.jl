@@ -7,15 +7,6 @@ quadde64 = QuadDE(Float64)
 quaddeBF = QuadDE(BigFloat)
 
 
-# Test Base.show works without error
-let
-    io = IOBuffer()
-    @test (Base.show(io, MIME("text/plain"), quadde32); true)
-    @test (Base.show(io, MIME("text/plain"), quadde64); true)
-    @test (Base.show(io, MIME("text/plain"), quaddeBF); true)
-end
-
-
 # Test integral interval [-1, 1] with QuadDE
 let
     f(x::AbstractFloat) = 2/(1 + x^2)

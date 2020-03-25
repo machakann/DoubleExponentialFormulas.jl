@@ -144,6 +144,8 @@ function generate_table⁻(::Type{QuadES}, h::T, step::Int) where {T<:AbstractFl
     while true
         t = k*h
         xk, wk = weight(QuadES, t)
+        # xk ≤ eps(zero(T)) may be better for accuracy but it may hurts
+        # singular point durability for some kind of integrands.
         xk ≤ eps(T) && break
         wk ≤ floatmin(T) && break
         push!(table, (xk, wk))
