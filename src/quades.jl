@@ -95,9 +95,8 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
     x0, w0 = q.origin
     I = f(x0)*w0
     istart⁺ = startindex(f, q.table0⁺, 1)
-    istart⁻ = startindex(f, q.table0⁻, 1)
     I += mapsum(sample, q.table0⁺, istart⁺)
-    I += mapsum(sample, q.table0⁻, istart⁻)
+    I += mapsum(sample, q.table0⁻)
     h0 = q.h0
     Ih = I*h0
     E = zero(eltype(Ih))
@@ -105,9 +104,8 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
         table⁺ = q.tables⁺[level]
         table⁻ = q.tables⁻[level]
         istart⁺ = startindex(f, table⁺, 2*istart⁺ - 1)
-        istart⁻ = startindex(f, table⁻, 2*istart⁻ - 1)
         I += mapsum(sample, table⁺, istart⁺)
-        I += mapsum(sample, table⁻, istart⁻)
+        I += mapsum(sample, table⁻)
         h = h0/2^level
         prevIh = Ih
         Ih = I*h
@@ -146,7 +144,7 @@ function generate_table⁻(::Type{QuadES}, h::T, step::Int) where {T<:AbstractFl
     while true
         t = k*h
         xk, wk = weight(QuadES, t)
-        xk ≤ eps(zero(T)) && break
+        xk ≤ eps(T) && break
         wk ≤ floatmin(T) && break
         push!(table, (xk, wk))
         k += step
