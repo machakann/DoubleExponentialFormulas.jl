@@ -7,7 +7,8 @@ export
     QuadES,
     QuadSS,
     QuadDE,
-    quadde
+    quadde,
+    quaddeo
 
 
 """
@@ -74,6 +75,8 @@ include("quadts.jl")
 include("quades.jl")
 include("quadss.jl")
 include("quadde.jl")
+
+include("quaddeo.jl")
 
 
 end # module

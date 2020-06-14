@@ -94,3 +94,30 @@ User can specify the required precision as a type (`T<:AbstractFloat`), the star
 Using smaller `h0` may help if the integrand `f(x)` includes fine structure, such as spikes, in the integral interval. However, it seems that the subdivision of the interval would be more effective in many cases. Try subdivision first, and then think of an optimized integrator.
 
 See [documentation](https://machakann.github.io/DoubleExponentialFormulas.jl/stable) for more details.
+
+
+### Numerical integrator for decaying oscillatory integrands
+
+```
+    quaddeo(f::Function, ω::Real, θ::Real, a::Real, b::Real;
+            h0::Real=one(ω)/5, maxlevel::Integer=12,
+            atol::Real=zero(ω),
+            rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol))))
+```
+
+The `quaddeo` function is specialized for the decaying oscillatory integrands,
+
+    `f(x) = f₁(x)sin(ωx + θ)`,
+
+where `f₁(x)` is a decaying algebraic function. `ω` and `θ` are the frequency
+and the phase of the oscillatory part of the integrand. If the oscillatory part
+is `sin(ωx)`, then `θ = 0.0`; if it is `cos(ωx)` instead, then `θ = π/(2ω)`.
+
+```julia
+using DoubleExponentialFormulas
+using LinearAlgebra: norm
+
+f(x) = sin(x)/x;
+I, E = quaddeo(f, 1.0, 0.0, 0.0, Inf);
+I ≈ π/2  # true
+```

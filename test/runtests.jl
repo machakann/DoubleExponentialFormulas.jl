@@ -35,3 +35,8 @@ end
         include("quadde/Kahaner.jl")
     end
 end
+
+# quaddeo is for the numerical integration of oscillatory functions
+@testset "quaddeo" begin
+    include("quaddeo.jl")
+end
