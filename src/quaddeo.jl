@@ -227,17 +227,17 @@ function integrate_chunk⁻(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
 end
 
 
-function samplepoint(::Type{QuadDEO}, t)
+function samplepoint(::Type{QuadDEO}, t::T) where {T<:AbstractFloat}
     # The following equation is used for the variable conversion.
     #   ϕ(t) = (t + sqrt(t² + exp(π - K*cosh(t))))/2
     # Ref. (Japanese) : http://www.kurims.kyoto-u.ac.jp/~ooura/intdefaq-j.html
     #
     # NOTE: might be worth checking this?
     #       https://doi.org/10.1016/S0377-0427(99)00223-X
-    K = 2π
+    K = T(2π)
     A = exp(π - K*cosh(t))
     B = sqrt(t^2 + A)
     ϕ  = (t + B)/2
-    ϕ′ = 0.5 + (2t - K*A*sinh(t))/(4*B)
+    ϕ′ = T(0.5) + (2t - K*A*sinh(t))/(4*B)
     return ϕ, ϕ′
 end

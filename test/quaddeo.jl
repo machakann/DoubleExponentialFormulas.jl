@@ -188,3 +188,20 @@ let f(x) = [sin(x)/x, exp(-x)*cos(x)], expect = [π/2, 1/2]
     @test I ≈ expect
     @test E ≤ sqrt(eps(eltype(I))*norm(I))
 end
+
+
+# Type handling
+let f(x) = exp(-x)*cos(x), expect = BigFloat("0.5")
+    ω = BigFloat(1.0)
+    θ = BigFloat(π)/2
+    a = BigFloat(0.0)
+    b = BigFloat(Inf)
+
+    for T in [Float32, Float64, BigFloat]
+        ω_T, θ_T, a_T, b_T = T.((ω, θ, a, b))
+        I, E = quaddeo(f, ω_T, θ_T, a_T, b_T)
+        @test I isa T
+        @test I ≈ expect
+        @test E ≤ sqrt(eps(typeof(I))*norm(I))
+    end
+end
