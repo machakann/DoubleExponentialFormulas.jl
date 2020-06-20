@@ -195,7 +195,7 @@ function integrate_chunk⁻(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
 
         x, w = samplepoint(QuadDEO, t)
         if x == 0
-            # avoid end-point sigularity
+            # avoid end-point singularity
             loop_done = true
             break
         end
