@@ -54,6 +54,20 @@ quaddeo(f::Function, ω::Real, θ::Real, a::Real, b::Real;
         atol::Real=zero(ω), rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol)))) =
     quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)
 
+function quaddeo(f::Function, ω::Real, θ::Real, a::Real, b::Real, c::Real...;
+                 h0::Real=one(ω)/5, maxlevel::Integer=12,
+                 atol::Real=zero(ω), rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol))))
+    bc = (b, c...)
+    n = length(bc)
+    _atol = atol/n
+    I, E = quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)
+    for i in 2:n
+        dI, dE = quaddeo_entrance(f, ω, θ, bc[i-1], bc[i], h0, maxlevel, atol, rtol)
+        I += dI
+        E += dE
+    end
+    return I, E
+end
 
 
 function quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)

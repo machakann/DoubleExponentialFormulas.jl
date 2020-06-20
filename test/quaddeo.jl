@@ -163,3 +163,19 @@ let f(x) = sin(x)/x, expect = π/2
     @test I ≈ -π/2
     @test E ≤ sqrt(eps(typeof(I))*norm(I))
 end
+
+
+# Multiple integral intervals
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, 1.0, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, 1.0, 2.0, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
