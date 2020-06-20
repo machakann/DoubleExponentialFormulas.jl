@@ -155,7 +155,7 @@ function integrate(::Type{QuadDEO}, f, ω, θ, h, atol, rtol)
         loop_done && break
         dI = norm(prevI - I)
         tol = max(norm(I)*rtol, atol)
-        norm(dI) ≤ tol && break
+        dI ≤ tol && break
     end
     return I
 end
