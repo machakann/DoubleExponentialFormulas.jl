@@ -72,3 +72,136 @@ let f(x) = sin(x)*log(x), expect = -Base.MathConstants.eulergamma
     @test I ≈ expect
     @test E ≤ sqrt(eps(typeof(I))*norm(I))
 end
+
+
+# Various interval (-∞, ∞)
+let f(x) = sin(x)/x, expect = π
+    I, E = quaddeo(f, 1.0, 0.0, -Inf, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Various interval (0, ∞)
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Various interval (a, ∞)
+let f(x) = sin(x)/x, expect = π/2 - BigFloat("1.851937051982466170361053370157991363345809728981154909804")
+    I, E = quaddeo(f, 1.0, 0.0, π, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Various interval (-∞, 0)
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, -Inf, 0.0)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Various interval (-∞, b)
+let f(x) = sin(x)/x, expect = π/2 - BigFloat("1.851937051982466170361053370157991363345809728981154909804")
+    I, E = quaddeo(f, 1.0, 0.0, -Inf, -π)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Various interval (a, b)
+let f(x) = sin(x)/x, expect = BigFloat("-0.43378547584983772011527320785824193420335637968613863796")
+    I, E = quaddeo(f, 1.0, 0.0, π, 2π)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+let f(x) = sin(x)/x, expect = BigFloat("0.43378547584983772011527320785824193420335637968613863796")
+    I, E = quaddeo(f, 1.0, 0.0, -π, -2π)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+let f(x) = sin(x)/x, expect = BigFloat("3.703874103964932340722106740315982726691619457962309819609")
+    I, E = quaddeo(f, 1.0, 0.0, -π, π)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Corner case (a == b)
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, 0.0)
+    @test I isa Float64
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 1.0, 1.0)
+    @test I isa Float64
+    @test I ≈ 0
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Corner case (a > b)
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, Inf, 0.0)
+    @test I isa Float64
+    @test I ≈ -π/2
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Multiple integral intervals
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, 1.0, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+let f(x) = sin(x)/x, expect = π/2
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, 1.0, 2.0, Inf)
+    @test I isa Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(typeof(I))*norm(I))
+end
+
+
+# Vectorized numerical integration
+let f(x) = [sin(x)/x, exp(-x)*cos(x)], expect = [π/2, 1/2]
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, Inf)
+    @test eltype(I) == Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(eltype(I))*norm(I))
+end
+
+
+# Type handling
+let f(x) = exp(-x)*cos(x), expect = BigFloat("0.5")
+    ω = BigFloat(1.0)
+    θ = BigFloat(π)/2
+    a = BigFloat(0.0)
+    b = BigFloat(Inf)
+
+    for T in [Float32, Float64, BigFloat]
+        ω_T, θ_T, a_T, b_T = T.((ω, θ, a, b))
+        I, E = quaddeo(f, ω_T, θ_T, a_T, b_T)
+        @test I isa T
+        @test I ≈ expect
+        @test E ≤ sqrt(eps(typeof(I))*norm(I))
+    end
+end

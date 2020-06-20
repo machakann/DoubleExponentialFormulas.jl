@@ -52,19 +52,34 @@ true
 quaddeo(f::Function, ω::Real, θ::Real, a::Real, b::Real;
         h0::Real=one(ω)/5, maxlevel::Integer=12,
         atol::Real=zero(ω), rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol)))) =
-    _quaddeo_promote(f, a, b, ω, θ, h0, maxlevel, atol, rtol)
+    quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)
+
+function quaddeo(f::Function, ω::Real, θ::Real, a::Real, b::Real, c::Real...;
+                 h0::Real=one(ω)/5, maxlevel::Integer=12,
+                 atol::Real=zero(ω), rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol))))
+    bc = (b, c...)
+    n = length(bc)
+    _atol = atol/n
+    I, E = quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)
+    for i in 2:n
+        dI, dE = quaddeo_entrance(f, ω, θ, bc[i-1], bc[i], h0, maxlevel, atol, rtol)
+        I += dI
+        E += dE
+    end
+    return I, E
+end
 
 
-function _quaddeo_promote(f, a, b, ω, θ, h0, maxlevel, atol, rtol)
-    _a, _b, _ω, _θ, _h0 = float.(promote(a, b, ω, θ, h0))
+function quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)
+    _ω, _θ, _a, _b, _h0 = float.(promote(ω, θ, a, b, h0))
     if a > b
-        I, E = _quaddeo(f, _b, _a, _ω, _θ, _h0, maxlevel, atol, rtol)
+        I, E = quaddeo_main(f, _ω, _θ, _b, _a, _h0, maxlevel, atol, rtol)
         return -I, E
     else
-        return _quaddeo(f, _a, _b, _ω, _θ, _h0, maxlevel, atol, rtol)
+        return quaddeo_main(f, _ω, _θ, _a, _b, _h0, maxlevel, atol, rtol)
     end
 end
-function _quaddeo(f, a::T, b::T, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
+function quaddeo_main(f, ω::T, θ::T, a::T, b::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
     if a == b
         M = π/h0
         δ = θ/M
@@ -77,39 +92,39 @@ function _quaddeo(f, a::T, b::T, ω::T, θ::T, h0::T, maxlevel, atol, rtol) wher
 
     if a == -Inf && b == Inf
         _atol = atol/2
-        I⁻, E⁻ = _quaddeo(f, a, zero(a), ω, θ, h0, maxlevel, _atol, rtol)
-        I⁺, E⁺ = _quaddeo(f, zero(b), b, ω, θ, h0, maxlevel, _atol, rtol)
+        I⁻, E⁻ = quaddeo_main(f, ω, θ, a, zero(a), h0, maxlevel, _atol, rtol)
+        I⁺, E⁺ = quaddeo_main(f, ω, θ, zero(b), b, h0, maxlevel, _atol, rtol)
         return I⁺ + I⁻, E⁺ + E⁻
     elseif b == Inf
         if a == 0
-            return _quaddeo(f, ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(f, ω, θ, h0, maxlevel, atol, rtol)
         else
-            return _quaddeo(u -> f(u + a), ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(u -> f(u + a), ω, θ, h0, maxlevel, atol, rtol)
         end
     elseif a == -Inf
         if b == 0
-            return _quaddeo(u -> f(-u), ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(u -> f(-u), ω, θ, h0, maxlevel, atol, rtol)
         else
-            return _quaddeo(u -> f(-u + b), ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(u -> f(-u + b), ω, θ, h0, maxlevel, atol, rtol)
         end
     else
         _atol = atol/2
         if a < 0 && b ≤ 0
-            Ia, Ea = _quaddeo(f, T(-Inf), a, ω, θ, h0, maxlevel, _atol, rtol)
-            Ib, Eb = _quaddeo(f, T(-Inf), b, ω, θ, h0, maxlevel, _atol, rtol)
+            Ia, Ea = quaddeo_main(f, ω, θ, T(-Inf), a, h0, maxlevel, _atol, rtol)
+            Ib, Eb = quaddeo_main(f, ω, θ, T(-Inf), b, h0, maxlevel, _atol, rtol)
             return Ib - Ia, Ea + Eb
         elseif a ≥ 0 && b > 0
-            Ia, Ea = _quaddeo(f, a, T(Inf), ω, θ, h0, maxlevel, _atol, rtol)
-            Ib, Eb = _quaddeo(f, b, T(Inf), ω, θ, h0, maxlevel, _atol, rtol)
+            Ia, Ea = quaddeo_main(f, ω, θ, a, T(Inf), h0, maxlevel, _atol, rtol)
+            Ib, Eb = quaddeo_main(f, ω, θ, b, T(Inf), h0, maxlevel, _atol, rtol)
             return Ia - Ib, Ea + Eb
         else
-            I⁻, E⁻ = _quaddeo(f, a, zero(a), ω, θ, h0, maxlevel, _atol, rtol)
-            I⁺, E⁺ = _quaddeo(f, zero(b), b, ω, θ, h0, maxlevel, _atol, rtol)
+            I⁻, E⁻ = quaddeo_main(f, ω, θ, a, zero(a), h0, maxlevel, _atol, rtol)
+            I⁺, E⁺ = quaddeo_main(f, ω, θ, zero(b), b, h0, maxlevel, _atol, rtol)
             return I⁺ + I⁻, E⁺ + E⁻
         end
     end
 end
-function _quaddeo(f, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
+function quaddeo_main(f, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
     I = integrate(QuadDEO, f, ω, θ, h0, atol, rtol)
     E = zero(T)
     for level in 1:maxlevel
@@ -131,7 +146,6 @@ function integrate(::Type{QuadDEO}, f, ω, θ, h, atol, rtol)
     x0, w0 = samplepoint(QuadDEO, t0)
     Σ = f(M*x0)*w0
     I = M*Σ*h
-    prevI = I
     chunklen = 10
 
     k = 1
@@ -155,7 +169,7 @@ function integrate(::Type{QuadDEO}, f, ω, θ, h, atol, rtol)
         loop_done && break
         dI = norm(prevI - I)
         tol = max(norm(I)*rtol, atol)
-        norm(dI) ≤ tol && break
+        dI ≤ tol && break
     end
     return I
 end
@@ -172,7 +186,7 @@ function integrate_chunk⁺(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
 
         x, w = samplepoint(QuadDEO, t)
         dΣ = f(M*x)*w
-        if isnan(dΣ)
+        if all(isnan.(dΣ))
             loop_done = true
             break
         end
@@ -195,13 +209,13 @@ function integrate_chunk⁻(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
 
         x, w = samplepoint(QuadDEO, t)
         if x == 0
-            # avoid end-point sigularity
+            # avoid end-point singularity
             loop_done = true
             break
         end
 
         dΣ = f(M*x)*w
-        if isnan(dΣ)
+        if all(isnan.(dΣ))
             loop_done = true
             break
         end
@@ -213,17 +227,17 @@ function integrate_chunk⁻(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
 end
 
 
-function samplepoint(::Type{QuadDEO}, t)
+function samplepoint(::Type{QuadDEO}, t::T) where {T<:AbstractFloat}
     # The following equation is used for the variable conversion.
     #   ϕ(t) = (t + sqrt(t² + exp(π - K*cosh(t))))/2
     # Ref. (Japanese) : http://www.kurims.kyoto-u.ac.jp/~ooura/intdefaq-j.html
     #
     # NOTE: might be worth checking this?
     #       https://doi.org/10.1016/S0377-0427(99)00223-X
-    K = 2π
+    K = T(2π)
     A = exp(π - K*cosh(t))
     B = sqrt(t^2 + A)
     ϕ  = (t + B)/2
-    ϕ′ = 0.5 + (2t - K*A*sinh(t))/(4*B)
+    ϕ′ = T(0.5) + (2t - K*A*sinh(t))/(4*B)
     return ϕ, ϕ′
 end
