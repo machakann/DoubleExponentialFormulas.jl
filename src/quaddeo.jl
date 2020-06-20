@@ -131,7 +131,6 @@ function integrate(::Type{QuadDEO}, f, ω, θ, h, atol, rtol)
     x0, w0 = samplepoint(QuadDEO, t0)
     Σ = f(M*x0)*w0
     I = M*Σ*h
-    prevI = I
     chunklen = 10
 
     k = 1
