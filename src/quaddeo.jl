@@ -186,7 +186,7 @@ function integrate_chunk⁺(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
 
         x, w = samplepoint(QuadDEO, t)
         dΣ = f(M*x)*w
-        if isnan(dΣ)
+        if all(isnan.(dΣ))
             loop_done = true
             break
         end
@@ -215,7 +215,7 @@ function integrate_chunk⁻(::Type{QuadDEO}, f, M, δ, k, h, Σ, chunklen)
         end
 
         dΣ = f(M*x)*w
-        if isnan(dΣ)
+        if all(isnan.(dΣ))
             loop_done = true
             break
         end

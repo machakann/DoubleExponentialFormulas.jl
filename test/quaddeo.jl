@@ -179,3 +179,12 @@ let f(x) = sin(x)/x, expect = π/2
     @test I ≈ expect
     @test E ≤ sqrt(eps(typeof(I))*norm(I))
 end
+
+
+# Vectorized numerical integration
+let f(x) = [sin(x)/x, exp(-x)*cos(x)], expect = [π/2, 1/2]
+    I, E = quaddeo(f, 1.0, 0.0, 0.0, Inf)
+    @test eltype(I) == Float64
+    @test I ≈ expect
+    @test E ≤ sqrt(eps(eltype(I))*norm(I))
+end
