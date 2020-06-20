@@ -52,19 +52,19 @@ true
 quaddeo(f::Function, ω::Real, θ::Real, a::Real, b::Real;
         h0::Real=one(ω)/5, maxlevel::Integer=12,
         atol::Real=zero(ω), rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol)))) =
-    _quaddeo_promote(f, a, b, ω, θ, h0, maxlevel, atol, rtol)
+    quaddeo_entrance(f, a, b, ω, θ, h0, maxlevel, atol, rtol)
 
 
-function _quaddeo_promote(f, a, b, ω, θ, h0, maxlevel, atol, rtol)
+function quaddeo_entrance(f, a, b, ω, θ, h0, maxlevel, atol, rtol)
     _a, _b, _ω, _θ, _h0 = float.(promote(a, b, ω, θ, h0))
     if a > b
-        I, E = _quaddeo(f, _b, _a, _ω, _θ, _h0, maxlevel, atol, rtol)
+        I, E = quaddeo_main(f, _b, _a, _ω, _θ, _h0, maxlevel, atol, rtol)
         return -I, E
     else
-        return _quaddeo(f, _a, _b, _ω, _θ, _h0, maxlevel, atol, rtol)
+        return quaddeo_main(f, _a, _b, _ω, _θ, _h0, maxlevel, atol, rtol)
     end
 end
-function _quaddeo(f, a::T, b::T, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
+function quaddeo_main(f, a::T, b::T, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
     if a == b
         M = π/h0
         δ = θ/M
@@ -77,39 +77,39 @@ function _quaddeo(f, a::T, b::T, ω::T, θ::T, h0::T, maxlevel, atol, rtol) wher
 
     if a == -Inf && b == Inf
         _atol = atol/2
-        I⁻, E⁻ = _quaddeo(f, a, zero(a), ω, θ, h0, maxlevel, _atol, rtol)
-        I⁺, E⁺ = _quaddeo(f, zero(b), b, ω, θ, h0, maxlevel, _atol, rtol)
+        I⁻, E⁻ = quaddeo_main(f, a, zero(a), ω, θ, h0, maxlevel, _atol, rtol)
+        I⁺, E⁺ = quaddeo_main(f, zero(b), b, ω, θ, h0, maxlevel, _atol, rtol)
         return I⁺ + I⁻, E⁺ + E⁻
     elseif b == Inf
         if a == 0
-            return _quaddeo(f, ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(f, ω, θ, h0, maxlevel, atol, rtol)
         else
-            return _quaddeo(u -> f(u + a), ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(u -> f(u + a), ω, θ, h0, maxlevel, atol, rtol)
         end
     elseif a == -Inf
         if b == 0
-            return _quaddeo(u -> f(-u), ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(u -> f(-u), ω, θ, h0, maxlevel, atol, rtol)
         else
-            return _quaddeo(u -> f(-u + b), ω, θ, h0, maxlevel, atol, rtol)
+            return quaddeo_main(u -> f(-u + b), ω, θ, h0, maxlevel, atol, rtol)
         end
     else
         _atol = atol/2
         if a < 0 && b ≤ 0
-            Ia, Ea = _quaddeo(f, T(-Inf), a, ω, θ, h0, maxlevel, _atol, rtol)
-            Ib, Eb = _quaddeo(f, T(-Inf), b, ω, θ, h0, maxlevel, _atol, rtol)
+            Ia, Ea = quaddeo_main(f, T(-Inf), a, ω, θ, h0, maxlevel, _atol, rtol)
+            Ib, Eb = quaddeo_main(f, T(-Inf), b, ω, θ, h0, maxlevel, _atol, rtol)
             return Ib - Ia, Ea + Eb
         elseif a ≥ 0 && b > 0
-            Ia, Ea = _quaddeo(f, a, T(Inf), ω, θ, h0, maxlevel, _atol, rtol)
-            Ib, Eb = _quaddeo(f, b, T(Inf), ω, θ, h0, maxlevel, _atol, rtol)
+            Ia, Ea = quaddeo_main(f, a, T(Inf), ω, θ, h0, maxlevel, _atol, rtol)
+            Ib, Eb = quaddeo_main(f, b, T(Inf), ω, θ, h0, maxlevel, _atol, rtol)
             return Ia - Ib, Ea + Eb
         else
-            I⁻, E⁻ = _quaddeo(f, a, zero(a), ω, θ, h0, maxlevel, _atol, rtol)
-            I⁺, E⁺ = _quaddeo(f, zero(b), b, ω, θ, h0, maxlevel, _atol, rtol)
+            I⁻, E⁻ = quaddeo_main(f, a, zero(a), ω, θ, h0, maxlevel, _atol, rtol)
+            I⁺, E⁺ = quaddeo_main(f, zero(b), b, ω, θ, h0, maxlevel, _atol, rtol)
             return I⁺ + I⁻, E⁺ + E⁻
         end
     end
 end
-function _quaddeo(f, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
+function quaddeo_main(f, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
     I = integrate(QuadDEO, f, ω, θ, h0, atol, rtol)
     E = zero(T)
     for level in 1:maxlevel
