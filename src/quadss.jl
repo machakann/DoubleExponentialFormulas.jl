@@ -91,28 +91,28 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
     sample⁺(t) = f⁺(t[1])*t[2]
     sample⁻(t) = f⁻(t[1])*t[2]
     x0, w0 = q.origin
-    I = f(x0)*w0
+    Σ = f(x0)*w0
     istart⁺ = startindex(f⁺, q.table0, 1)
     istart⁻ = startindex(f⁻, q.table0, 1)
-    I += mapsum(sample⁺, q.table0, istart⁺)
-    I += mapsum(sample⁻, q.table0, istart⁻)
+    Σ += mapsum(sample⁺, q.table0, istart⁺)
+    Σ += mapsum(sample⁻, q.table0, istart⁻)
     h0 = q.h0
-    Ih = I*h0
-    E = zero(eltype(Ih))
+    I = h0*Σ
+    E = zero(eltype(I))
     for level in 1:N
         table = q.tables[level]
         istart⁺ = startindex(f⁺, table, 2*istart⁺ - 1)
         istart⁻ = startindex(f⁻, table, 2*istart⁻ - 1)
-        I += mapsum(sample⁺, table, istart⁺)
-        I += mapsum(sample⁻, table, istart⁻)
+        Σ += mapsum(sample⁺, table, istart⁺)
+        Σ += mapsum(sample⁻, table, istart⁻)
         h = h0/2^level
-        prevIh = Ih
-        Ih = I*h
-        E = estimate_error(T, prevIh, Ih)
-        tol = max(norm(Ih)*rtol, atol)
+        prevI = I
+        I = h*Σ
+        E = estimate_error(T, prevI, I)
+        tol = max(norm(I)*rtol, atol)
         !(E > tol) && break
     end
-    return Ih, E
+    return I, E
 end
 
 function Base.show(io::IO, ::MIME"text/plain", q::QuadSS{T,N}) where {T<:AbstractFloat,N}

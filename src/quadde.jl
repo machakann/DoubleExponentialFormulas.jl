@@ -131,8 +131,8 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real;
             _b = T(b)
             s = (_b + _a)/2
             t = (_b - _a)/2
-            Ih, E = q.qts(u -> f(s + t*u); atol=atol/t, rtol=rtol)
-            return Ih*t, E*t
+            I, E = q.qts(u -> f(s + t*u); atol=atol/t, rtol=rtol)
+            return I*t, E*t
         end
     end
 end
@@ -142,13 +142,13 @@ function (q::QuadDE{T,N})(f::Function, a::Real, b::Real, c::Real...;
     bc = (b, c...)
     n = length(bc)
     _atol = atol/n
-    Ih, E = q(f, a, b; atol=_atol, rtol=rtol)
+    I, E = q(f, a, b; atol=_atol, rtol=rtol)
     for i in 2:n
         dIh, dE = q(f, bc[i-1], bc[i]; atol=_atol, rtol=rtol)
-        Ih += dIh
+        I += dIh
         E += dE
     end
-    return Ih, E
+    return I, E
 end
 
 function Base.show(io::IO, ::MIME"text/plain", q::QuadDE{T,N}) where {T<:AbstractFloat,N}
