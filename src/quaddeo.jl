@@ -71,6 +71,8 @@ end
 
 
 function quaddeo_entrance(f, ω, θ, a, b, h0, maxlevel, atol, rtol)
+    @assert maxlevel > 0
+    @assert h0 > 0
     _ω, _θ, _a, _b, _h0 = float.(promote(ω, θ, a, b, h0))
     if a > b
         I, E = quaddeo_main(f, _ω, _θ, _b, _a, _h0, maxlevel, atol, rtol)
