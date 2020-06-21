@@ -74,7 +74,7 @@ end
 function QuadTS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
     @assert maxlevel > 0
     @assert h0 > 0
-    origin = weight(QuadTS, zero(T))
+    origin = samplepoint(QuadTS, zero(T))
     table0 = generate_table(QuadTS, h0, 1)
     tables = Vector{Tuple{T,T}}[]
     for level in 1:maxlevel
@@ -87,15 +87,15 @@ end
 
 function (q::QuadTS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    sample(t) = f(t[1])*t[2] + f(-t[1])*t[2]
+    eval(t) = f(t[1])*t[2] + f(-t[1])*t[2]
     x0, w0 = q.origin
-    Σ = f(x0)*w0 + mapsum(sample, q.table0)
+    Σ = f(x0)*w0 + mapsum(eval, q.table0)
     h0 = q.h0
     I = h0*Σ
     E = zero(eltype(I))
     for level in 1:N
         table = q.tables[level]
-        Σ += mapsum(sample, table)
+        Σ += mapsum(eval, table)
         h = h0/2^level
         prevI = I
         I = h*Σ
@@ -117,7 +117,7 @@ function generate_table(::Type{QuadTS}, h::T, step::Int) where {T<:AbstractFloat
     k = 1
     while true
         t = k*h
-        xk, wk = weight(QuadTS, t)
+        xk, wk = samplepoint(QuadTS, t)
         1 - xk ≤ eps(T) && break
         wk ≤ floatmin(T) && break
         push!(table, (xk, wk))
@@ -128,8 +128,9 @@ function generate_table(::Type{QuadTS}, h::T, step::Int) where {T<:AbstractFloat
 end
 
 
-function weight(::Type{QuadTS}, t)
-    ϕ(t) = tanh(sinh(t)*π/2)
-    ϕ′(t) = (cosh(t)*π/2)/cosh(sinh(t)*π/2)^2
-    return ϕ(t), ϕ′(t)
+function samplepoint(::Type{QuadTS}, t::T) where {T<:AbstractFloat}
+    sinht = sinh(t)
+    ϕ = tanh(sinht*π/2)
+    ϕ′ = (cosh(t)*π/2)/cosh(sinht*π/2)^2
+    return ϕ, ϕ′
 end

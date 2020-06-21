@@ -73,7 +73,7 @@ end
 function QuadSS(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
     @assert maxlevel > 0
     @assert h0 > 0
-    origin = weight(QuadSS, zero(T))
+    origin = samplepoint(QuadSS, zero(T))
     table0 = generate_table(QuadSS, h0, 1)
     tables = Vector{Tuple{T,T}}[]
     for level in 1:maxlevel
@@ -88,14 +88,14 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
     f⁺ = f
     f⁻ = u -> f(-u)
-    sample⁺(t) = f⁺(t[1])*t[2]
-    sample⁻(t) = f⁻(t[1])*t[2]
+    eval⁺(t) = f⁺(t[1])*t[2]
+    eval⁻(t) = f⁻(t[1])*t[2]
     x0, w0 = q.origin
     Σ = f(x0)*w0
     istart⁺ = startindex(f⁺, q.table0, 1)
     istart⁻ = startindex(f⁻, q.table0, 1)
-    Σ += mapsum(sample⁺, q.table0, istart⁺)
-    Σ += mapsum(sample⁻, q.table0, istart⁻)
+    Σ += mapsum(eval⁺, q.table0, istart⁺)
+    Σ += mapsum(eval⁻, q.table0, istart⁻)
     h0 = q.h0
     I = h0*Σ
     E = zero(eltype(I))
@@ -103,8 +103,8 @@ function (q::QuadSS{T,N})(f::Function; atol::Real=zero(T),
         table = q.tables[level]
         istart⁺ = startindex(f⁺, table, 2*istart⁺ - 1)
         istart⁻ = startindex(f⁻, table, 2*istart⁻ - 1)
-        Σ += mapsum(sample⁺, table, istart⁺)
-        Σ += mapsum(sample⁻, table, istart⁻)
+        Σ += mapsum(eval⁺, table, istart⁺)
+        Σ += mapsum(eval⁻, table, istart⁻)
         h = h0/2^level
         prevI = I
         I = h*Σ
@@ -126,7 +126,7 @@ function generate_table(::Type{QuadSS}, h::T, step::Int) where {T<:AbstractFloat
     k = 1
     while true
         t = k*h
-        xk, wk = weight(QuadSS, t)
+        xk, wk = samplepoint(QuadSS, t)
         xk ≥ floatmax(T) && break
         wk ≥ floatmax(T) && break
         push!(table, (xk, wk))
@@ -137,8 +137,9 @@ function generate_table(::Type{QuadSS}, h::T, step::Int) where {T<:AbstractFloat
 end
 
 
-function weight(::Type{QuadSS}, t)
-    ϕ(t) = sinh(sinh(t)*π/2)
-    ϕ′(t) = (cosh(t)*π/2)*cosh(sinh(t)*π/2)
-    return ϕ(t), ϕ′(t)
+function samplepoint(::Type{QuadSS}, t)
+    sinht = sinh(t)
+    ϕ = sinh(sinht*π/2)
+    ϕ′ = (cosh(t)*π/2)*cosh(sinht*π/2)
+    return ϕ, ϕ′
 end

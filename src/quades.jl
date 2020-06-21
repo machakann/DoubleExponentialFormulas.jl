@@ -75,7 +75,7 @@ end
 function QuadES(T::Type{<:AbstractFloat}; maxlevel::Integer=12, h0::Real=one(T))
     @assert maxlevel > 0
     @assert h0 > 0
-    origin  = weight(QuadES, zero(T))
+    origin  = samplepoint(QuadES, zero(T))
     table0⁺ = generate_table⁺(QuadES, h0,  1)
     table0⁻ = generate_table⁻(QuadES, h0, -1)
     tables⁺ = Vector{Tuple{T,T}}[]
@@ -91,12 +91,12 @@ end
 
 function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
                           rtol::Real=atol>0 ? zero(T) : sqrt(eps(T))) where {T<:AbstractFloat,N}
-    sample(t) = f(t[1])*t[2]
+    eval(t) = f(t[1])*t[2]
     x0, w0 = q.origin
     Σ = f(x0)*w0
     istart⁺ = startindex(f, q.table0⁺, 1)
-    Σ += mapsum(sample, q.table0⁺, istart⁺)
-    Σ += mapsum(sample, q.table0⁻)
+    Σ += mapsum(eval, q.table0⁺, istart⁺)
+    Σ += mapsum(eval, q.table0⁻)
     h0 = q.h0
     I = h0*Σ
     E = zero(eltype(I))
@@ -104,8 +104,8 @@ function (q::QuadES{T,N})(f::Function; atol::Real=zero(T),
         table⁺ = q.tables⁺[level]
         table⁻ = q.tables⁻[level]
         istart⁺ = startindex(f, table⁺, 2*istart⁺ - 1)
-        Σ += mapsum(sample, table⁺, istart⁺)
-        Σ += mapsum(sample, table⁻)
+        Σ += mapsum(eval, table⁺, istart⁺)
+        Σ += mapsum(eval, table⁻)
         h = h0/2^level
         prevI = I
         I = h*Σ
@@ -127,7 +127,7 @@ function generate_table⁺(::Type{QuadES}, h::T, step::Int) where {T<:AbstractFl
     k = 1
     while true
         t = k*h
-        xk, wk = weight(QuadES, t)
+        xk, wk = samplepoint(QuadES, t)
         xk ≥ floatmax(T) && break
         wk ≥ floatmax(T) && break
         push!(table, (xk, wk))
@@ -143,7 +143,7 @@ function generate_table⁻(::Type{QuadES}, h::T, step::Int) where {T<:AbstractFl
     k = -1
     while true
         t = k*h
-        xk, wk = weight(QuadES, t)
+        xk, wk = samplepoint(QuadES, t)
         # xk ≤ eps(zero(T)) may be better for accuracy but it may hurts
         # singular point durability for some kind of integrands.
         xk ≤ eps(T) && break
@@ -156,8 +156,9 @@ function generate_table⁻(::Type{QuadES}, h::T, step::Int) where {T<:AbstractFl
 end
 
 
-function weight(::Type{QuadES}, t)
-    ϕ(t) = exp(sinh(t)*π/2)
-    ϕ′(t) = (cosh(t)*π/2)*exp(sinh(t)*π/2)
-    return ϕ(t), ϕ′(t)
+function samplepoint(::Type{QuadES}, t)
+    expsinht = exp(sinh(t)*π/2)
+    ϕ = expsinht
+    ϕ′ = (cosh(t)*π/2)*expsinht
+    return ϕ, ϕ′
 end
