@@ -13,12 +13,6 @@
 
 This package provides functions for one-dimensional numerical integration using the double exponential formula [1,2] also known as the [tanh-sinh quadrature](https://en.wikipedia.org/wiki/Tanh-sinh_quadrature) and its variants.
 
-1. Takahasi, H.; Mori, M. Double Exponential Formulas for Numerical
-Integration. *Publ. Res. Inst. Math. Sci.* **1973,** *9 (3),* 721–741. [10.2977/prims/1195192451](https://doi.org/10.2977/prims/1195192451).
-
-2. Mori, M.; Sugihara, M. The Double-Exponential Transformation in Numerical
-Analysis. *J. Comput. Appl. Math.* **2001,** *127 (1–2),* 287–296. [10.1016/S0377-0427(00)00501-X](https://doi.org/10.1016/S0377-0427(00)00501-X).
-
 
 
 ## Instllation
@@ -105,13 +99,11 @@ See [documentation](https://machakann.github.io/DoubleExponentialFormulas.jl/sta
             rtol::Real=atol>0 ? zero(atol) : sqrt(eps(typeof(atol))))
 ```
 
-The `quaddeo` function is specialized for the decaying oscillatory integrands,
+The `quaddeo` function is specialized for the decaying oscillatory integrands, [3-5]
 
-    `f(x) = f₁(x)sin(ωx + θ)`,
+    f(x) = g(x)sin(ωx + θ),
 
-where `f₁(x)` is a decaying algebraic function. `ω` and `θ` are the frequency
-and the phase of the oscillatory part of the integrand. If the oscillatory part
-is `sin(ωx)`, then `θ = 0.0`; if it is `cos(ωx)` instead, then `θ = π/(2ω)`.
+where `g(x)` is a decaying algebraic function. `ω` and `θ` are the frequency and the phase of the oscillatory part of the integrand. If the oscillatory part is `sin(ωx)`, then `θ = 0.0`; if it is `cos(ωx)` instead, then `θ = π/(2ω)`.
 
 ```julia
 using DoubleExponentialFormulas
@@ -121,3 +113,17 @@ f(x) = sin(x)/x;
 I, E = quaddeo(f, 1.0, 0.0, 0.0, Inf);
 I ≈ π/2  # true
 ```
+
+
+## References
+
+
+1. Takahasi, H.; Mori, M. Double Exponential Formulas for Numerical Integration. *Publ. Res. Inst. Math. Sci.* **1973,** *9 (3),* 721–741. [10.2977/prims/1195192451](https://doi.org/10.2977/prims/1195192451).
+
+1. Mori, M.; Sugihara, M. The Double-Exponential Transformation in Numerical Analysis. *J. Comput. Appl. Math.* **2001,** *127 (1–2),* 287–296. [10.1016/S0377-0427(00)00501-X](https://doi.org/10.1016/S0377-0427(00)00501-X).
+
+1. Ooura, T.; Mori, M. The double exponential formula for oscillatory functions over the half infinite interval. *J. Comput. Appl. Math.* **1991,** *38,* 353–360. [10.1016/0377-0427(91)90181-I](https://doi.org/10.1016/0377-0427(91)90181-I)
+
+1. [http://www.kurims.kyoto-u.ac.jp/~ooura/intde-j.html](http://www.kurims.kyoto-u.ac.jp/~ooura/intde-j.html)
+
+1. [http://www.kurims.kyoto-u.ac.jp/~ooura/intdefaq-j.html](http://www.kurims.kyoto-u.ac.jp/~ooura/intdefaq-j.html)
