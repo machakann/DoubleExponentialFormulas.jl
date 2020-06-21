@@ -128,7 +128,7 @@ function quaddeo_main(f, ω::T, θ::T, a::T, b::T, h0::T, maxlevel, atol, rtol) 
 end
 function quaddeo_main(f, ω::T, θ::T, h0::T, maxlevel, atol, rtol) where {T<:AbstractFloat}
     I = integrate(QuadDEO, f, ω, θ, h0, atol, rtol)
-    E = zero(T)
+    E = zero(eltype(I))
     for level in 1:maxlevel
         h = h0/2^level
         prevI = I
