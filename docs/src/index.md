@@ -116,7 +116,7 @@ add https://github.com/machakann/DoubleExponentialFormulas.jl.git
 
 ## Usage
 
-### Handy interface in Float64 precision
+### Handy interface with Float64 precision
 
 ```
     I, E = quadde(f::Function, a::Real, b::Real, c::Real...;
