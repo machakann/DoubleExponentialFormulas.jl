@@ -2,7 +2,8 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://machakann.github.io/DoubleExponentialFormulas.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://machakann.github.io/DoubleExponentialFormulas.jl/dev)
-
+[![CI](https://github.com/machakann/DoubleExponentialFormulas.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/machakann/DoubleExponentialFormulas.jl/actions/workflows/CI.yml)
+[![Codecov](https://codecov.io/gh/machakann/DoubleExponentialFormulas.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/machakann/DoubleExponentialFormulas.jl)
 
 
 ## Introduction
