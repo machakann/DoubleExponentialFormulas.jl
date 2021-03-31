@@ -15,4 +15,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/machakann/DoubleExponentialFormulas.jl",
+    deploy_config=Documenter.GitHubActions(),
 )
